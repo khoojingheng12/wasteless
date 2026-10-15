@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -313,7 +314,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
         <section class="panel">
           <h2>About WasteLess</h2>
           <p class="sub">WasteLess encourages recycling by rewarding sustainable actions. Collect points and redeem available rewards.</p>
-          <p class="note">This prototype records redemptions in Firestore. Real rewards should be processed by a trusted server.</p>
+          <p class="note">Points and redemptions must be processed by trusted server functions. Never trust a browser-only points balance.</p>
         </section>
       </div>
     </div>
@@ -322,16 +323,12 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
 
 <footer><span>WasteLess · Make every action count.</span><span>Recycle responsibly. Redeem fairly.</span></footer>
 </div>
+
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import {
-  getAuth,onAuthStateChanged,createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,signOut,updateProfile
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import {
-  getFirestore,doc,getDoc,setDoc,updateDoc,collection,query,
-  orderBy,limit,onSnapshot,serverTimestamp,runTransaction
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import {getFirestore,doc,getDoc,setDoc,updateDoc,collection,query,orderBy,limit,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import {getFunctions,httpsCallable} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-functions.js";
 
 const firebaseConfig={
   apiKey:"AIzaSyCVfxa0DOThWiLc6PaL8nZGje6GB0n-C_g",
@@ -345,10 +342,11 @@ const firebaseConfig={
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
+const functions=getFunctions(app,"us-central1");
+const redeemReward=httpsCallable(functions,"redeemReward");
 const $=id=>document.getElementById(id);
 
 const themeNames={light:"Light",dark:"Dark",forest:"Forest",ocean:"Ocean"};
-
 function applyTheme(theme,save=true){
   if(!Object.prototype.hasOwnProperty.call(themeNames,theme)) theme="light";
   document.body.dataset.theme=theme;
@@ -359,15 +357,11 @@ function applyTheme(theme,save=true){
   document.querySelector('meta[name="theme-color"]').content={
     light:"#f7f8f6",dark:"#151a17",forest:"#edf4ed",ocean:"#f1f7fa"
   }[theme];
-  if(save){
-    try{localStorage.setItem("wasteless-theme",theme);}catch(e){}
-  }
+  if(save){try{localStorage.setItem("wasteless-theme",theme);}catch(e){}}
 }
-
 document.querySelectorAll("[data-theme-choice]").forEach(button=>{
   button.addEventListener("click",()=>applyTheme(button.dataset.themeChoice));
 });
-
 let initialTheme="light";
 try{initialTheme=localStorage.getItem("wasteless-theme")||"light";}catch(e){}
 applyTheme(initialTheme,false);
@@ -413,81 +407,51 @@ const icons={
 function svg(type){
  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[type]||icons.leaf}</svg>`;
 }
-
 function notice(id,msg,type="info"){
- const el=$(id);
- el.textContent=msg;
- el.className=`notice show ${type}`;
+ const el=$(id);el.textContent=msg;el.className=`notice show ${type}`;
 }
-
-function clearNotice(id){
- $(id).textContent="";
- $(id).className="notice";
-}
-
-function fmt(n){
- return Number(n||0).toLocaleString();
-}
-
+function clearNotice(id){$(id).textContent="";$(id).className="notice";}
+function fmt(n){return Number(n||0).toLocaleString();}
 function errorText(e){
  const known={
  "auth/email-already-in-use":"That email already has an account.",
  "auth/invalid-email":"Enter a valid email address.",
  "auth/weak-password":"Use a password with at least 6 characters.",
  "auth/invalid-credential":"Email or password is incorrect.",
- "permission-denied":"Permission denied. Check your Firestore security rules."
+ "permission-denied":"Permission denied. Check your Firestore security rules.",
+ "functions/not-found":"The required Cloud Function has not been deployed.",
+ "functions/unavailable":"The server function is unavailable."
  };
  return known[e?.code]||e?.message||"Something went wrong. Please try again.";
 }
-
 function validateName(value){
  const name=value.trim();
- if(name.length<1||name.length>30){
-  throw Error("Display names must be 1–30 characters.");
- }
+ if(name.length<1||name.length>30)throw Error("Display names must be 1–30 characters.");
  return name;
 }
 
 function setTab(name){
- document.querySelectorAll(".tab").forEach(b=>{
-  b.classList.toggle("active",b.dataset.tab===name);
- });
- document.querySelectorAll(".page").forEach(p=>{
-  p.classList.toggle("active",p.id===`page-${name}`);
- });
-
+ document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));
+ document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===`page-${name}`));
  const titles={
-  dashboard:["A little less waste.<br>A better tomorrow.","Recycle, collect points, and make a difference."],
-  rewards:["Good choices. Great rewards.","Use your verified points to redeem useful items."],
-  leaderboard:["Progress, together.","See how the WasteLess community is doing."],
-  account:["Your WasteLess account.","Manage your profile and track your contributions."]
+ dashboard:["A little less waste.<br>A better tomorrow.","Recycle, collect points, and make a difference."],
+ rewards:["Good choices. Great rewards.","Use your verified points to redeem useful items."],
+ leaderboard:["Progress, together.","See how the WasteLess community is doing."],
+ account:["Your WasteLess account.","Manage your profile and track your contributions."]
  };
-
  $("heroTitle").innerHTML=titles[name][0];
  $("heroDescription").textContent=titles[name][1];
-
  if(name==="leaderboard")renderLeaderboard();
  if(name==="account"&&!user)$("email").focus();
-
  window.scrollTo({top:0,behavior:"smooth"});
 }
-
 document.querySelectorAll(".tab").forEach(b=>{
- const labels={
-  dashboard:["dashboard","Home"],
-  rewards:["rewards","Rewards"],
-  leaderboard:["leaderboard","Leaderboard"],
-  account:["account","Account"]
- };
+ const labels={dashboard:["dashboard","Home"],rewards:["rewards","Rewards"],leaderboard:["leaderboard","Leaderboard"],account:["account","Account"]};
  const [ico,label]=labels[b.dataset.tab];
  b.innerHTML=svg(ico)+`<span>${label}</span>`;
  b.addEventListener("click",()=>setTab(b.dataset.tab));
 });
-
-document.querySelectorAll("[data-go]").forEach(b=>{
- b.addEventListener("click",()=>setTab(b.dataset.go));
-});
-
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.go)));
 $("brandIcon").innerHTML=svg("leaf");
 $("heroIcon").innerHTML=svg("leaf");
 $("dashboardIcon").innerHTML=svg("dashboard");
@@ -499,430 +463,156 @@ $("accountIcon").innerHTML=svg("account");
 $("themeIcon").innerHTML=svg("theme");
 
 function renderRewards(){
- const root=$("rewards");
- root.replaceChildren();
-
+ const root=$("rewards");root.replaceChildren();
  for(const r of rewards){
-  const card=document.createElement("article");
-  card.className="reward";
-
-  const art=document.createElement("div");
-  art.className="reward-art";
-  art.innerHTML=svg(r.icon);
-
-  const title=document.createElement("h3");
-  title.textContent=r.name;
-
-  const desc=document.createElement("p");
-  desc.className="reward-desc";
-  desc.textContent=r.desc;
-
-  const cost=document.createElement("div");
-  cost.className="reward-cost";
-  cost.textContent=fmt(r.cost)+" points";
-
-  const btn=document.createElement("button");
-  btn.className="btn secondary";
-  btn.type="button";
-  btn.textContent="Redeem";
+  const card=document.createElement("article");card.className="reward";
+  const art=document.createElement("div");art.className="reward-art";art.innerHTML=svg(r.icon);
+  const title=document.createElement("h3");title.textContent=r.name;
+  const desc=document.createElement("p");desc.className="reward-desc";desc.textContent=r.desc;
+  const cost=document.createElement("div");cost.className="reward-cost";cost.textContent=fmt(r.cost)+" points";
+  const btn=document.createElement("button");btn.className="btn secondary";btn.type="button";btn.textContent="Redeem";
   btn.addEventListener("click",()=>redeem(r,btn));
-
-  card.append(art,title,desc,cost,btn);
-  root.append(card);
+  card.append(art,title,desc,cost,btn);root.append(card);
  }
-
  $("rewardCount").textContent=rewards.length;
-
  const r=rewards.find(x=>x.id==="wireless-mouse");
- const art=document.createElement("div");
- art.className="reward-art";
- art.style.height="70px";
- art.innerHTML=svg(r.icon);
-
- const title=document.createElement("strong");
- title.style.fontSize="13px";
- title.textContent=r.name;
-
- const desc=document.createElement("p");
- desc.className="sub";
- desc.textContent=fmt(r.cost)+" points";
-
+ const art=document.createElement("div");art.className="reward-art";art.style.height="70px";art.innerHTML=svg(r.icon);
+ const title=document.createElement("strong");title.style.fontSize="13px";title.textContent=r.name;
+ const desc=document.createElement("p");desc.className="sub";desc.textContent=fmt(r.cost)+" points";
  $("featuredReward").replaceChildren(art,title,desc);
 }
-
-/*
- * HTML-only prototype redemption.
- * Deducts points and creates a redemption record in one Firestore transaction.
- */
 async function redeem(r,btn){
  clearNotice("rewardNotice");
-
- if(!user){
-  notice("rewardNotice","Sign in before redeeming a reward.");
-  setTab("account");
-  return;
- }
-
+ if(!user){notice("rewardNotice","Sign in before redeeming a reward.");setTab("account");return;}
  if(!confirm(`Redeem ${r.name} for ${fmt(r.cost)} points?`))return;
-
- btn.disabled=true;
- btn.textContent="Processing…";
-
+ btn.disabled=true;btn.textContent="Processing…";
  try{
-  const userRef=doc(db,"users",user.uid);
-  const redemptionRef=doc(collection(db,"redemptions"));
-
-  await runTransaction(db,async transaction=>{
-   const userSnap=await transaction.get(userRef);
-
-   if(!userSnap.exists()){
-    throw new Error("Your member account could not be found.");
-   }
-
-   const data=userSnap.data();
-   const currentPoints=Number(data.points||0);
-
-   if(!Number.isFinite(currentPoints)||currentPoints<0){
-    throw new Error("Your points balance is invalid.");
-   }
-
-   if(currentPoints<r.cost){
-    throw new Error(
-     `Not enough points. You need ${fmt(r.cost)} points, but have ${fmt(currentPoints)}.`
-    );
-   }
-
-   transaction.update(userRef,{
-    points:currentPoints-r.cost
-   });
-
-   transaction.set(redemptionRef,{
-    userId:user.uid,
-    userEmail:user.email||"",
-    rewardId:r.id,
-    rewardName:r.name,
-    pointsSpent:r.cost,
-    status:"pending",
-    createdAt:serverTimestamp()
-   });
-  });
-
+  // The server must determine the reward's real price and check stock.
+  const result=await redeemReward({rewardId:r.id});
+  notice("rewardNotice",result?.data?.message||"Redemption request submitted.","success");
   await refreshProfile();
-
-  notice(
-   "rewardNotice",
-   `Redemption recorded! ${r.name} cost ${fmt(r.cost)} points. Your remaining balance is ${fmt(userData.points)} points. The reward is pending fulfilment.`,
-   "success"
-  );
-
- }catch(e){
-  console.error("Redemption error:",e);
-
-  let message=e.message||"Please try again.";
-
-  if(e.code==="permission-denied"){
-   message="Firestore denied the redemption. Your security rules must permit the transaction.";
-  }
-
-  notice("rewardNotice","Redemption failed: "+message,"error");
-
- }finally{
-  btn.disabled=false;
-  btn.textContent="Redeem";
- }
+ }catch(e){notice("rewardNotice","Redemption failed: "+errorText(e),"error");}
+ finally{btn.disabled=false;btn.textContent="Redeem";}
 }
-
 function renderStats(){
- const points=user?fmt(userData?.points):"—";
- const visits=user?fmt(userData?.visits):"—";
-
- $("pointsValue").textContent=points;
- $("visitsValue").textContent=visits;
+ const points=user?fmt(userData?.points):"—",visits=user?fmt(userData?.visits):"—";
+ $("pointsValue").textContent=points;$("visitsValue").textContent=visits;
  $("rewardBalance").textContent=points;
- $("accountPoints").textContent=points;
- $("accountVisits").textContent=visits;
-
+ $("accountPoints").textContent=points;$("accountVisits").textContent=visits;
  const idx=user?leaderRows.findIndex(x=>x.id===user.uid):-1;
  const rank=idx<0?"—":"#"+(idx+1);
-
- $("rankValue").textContent=rank;
- $("accountRank").textContent=rank;
-
+ $("rankValue").textContent=rank;$("accountRank").textContent=rank;
  $("progressSummary").textContent=user
   ?`${fmt(userData?.visits)} verified actions completed. You have ${points} points available.`
   :"Sign in to view your progress.";
 }
-
 function renderLeaderboard(){
- const root=$("leaderboard");
- root.replaceChildren();
-
- if(!user){
-  const p=document.createElement("div");
-  p.className="empty";
-  p.textContent="Sign in to view the community leaderboard.";
-  root.append(p);
-  return;
- }
-
- if(!leaderRows.length){
-  const p=document.createElement("div");
-  p.className="empty";
-  p.textContent="No leaderboard entries yet.";
-  root.append(p);
-  return;
- }
-
+ const root=$("leaderboard");root.replaceChildren();
+ if(!user){const p=document.createElement("div");p.className="empty";p.textContent="Sign in to view the community leaderboard.";root.append(p);return;}
+ if(!leaderRows.length){const p=document.createElement("div");p.className="empty";p.textContent="No leaderboard entries yet.";root.append(p);return;}
  leaderRows.forEach((m,i)=>{
-  const row=document.createElement("div");
-  row.className="leader-row";
-
-  const rank=document.createElement("div");
-  rank.className="rank";
-  rank.textContent="#"+(i+1);
-
-  const avatar=document.createElement("div");
-  avatar.className="avatar";
-  avatar.textContent=(m.displayName||"W").trim().charAt(0).toUpperCase();
-
-  const info=document.createElement("div");
-  info.className="leader-info";
-
-  const name=document.createElement("div");
-  name.className="leader-name";
+  const row=document.createElement("div");row.className="leader-row";
+  const rank=document.createElement("div");rank.className="rank";rank.textContent="#"+(i+1);
+  const avatar=document.createElement("div");avatar.className="avatar";avatar.textContent=(m.displayName||"W").trim().charAt(0).toUpperCase();
+  const info=document.createElement("div");info.className="leader-info";
+  const name=document.createElement("div");name.className="leader-name";
   name.textContent=(m.displayName||"WasteLess Member")+(m.id===user.uid?" (You)":"");
-
-  const meta=document.createElement("div");
-  meta.className="leader-meta";
-  meta.textContent=fmt(m.visits)+" verified actions";
-
-  const points=document.createElement("div");
-  points.className="leader-points";
-  points.textContent=fmt(m.points)+" pts";
-
-  info.append(name,meta);
-  row.append(rank,avatar,info,points);
-  root.append(row);
+  const meta=document.createElement("div");meta.className="leader-meta";meta.textContent=fmt(m.visits)+" verified actions";
+  const points=document.createElement("div");points.className="leader-points";points.textContent=fmt(m.points)+" pts";
+  info.append(name,meta);row.append(rank,avatar,info,points);root.append(row);
  });
 }
-
 async function ensureUserDoc(u,name){
- const ref=doc(db,"users",u.uid);
- const snap=await getDoc(ref);
-
+ const ref=doc(db,"users",u.uid),snap=await getDoc(ref);
  if(!snap.exists()){
   const n=validateName(name||u.displayName||"WasteLess Member");
-
-  await setDoc(ref,{
-   displayName:n,
-   points:0,
-   visits:0,
-   createdAt:serverTimestamp()
-  });
-
+  await setDoc(ref,{displayName:n,points:0,visits:0,createdAt:serverTimestamp()});
   return {displayName:n,points:0,visits:0};
  }
-
  const d=snap.data();
-
- return {
-  displayName:d.displayName||u.displayName||"WasteLess Member",
-  points:Number(d.points||0),
-  visits:Number(d.visits||0)
- };
+ return {displayName:d.displayName||u.displayName||"WasteLess Member",points:Number(d.points||0),visits:Number(d.visits||0)};
 }
-
 async function refreshProfile(){
  if(!user)return;
-
  userData=await ensureUserDoc(user);
-
  $("accountName").textContent=userData.displayName;
  $("accountEmail").textContent=user.email||"";
  $("newDisplayName").value=userData.displayName;
-
  renderStats();
 }
-
 function startLeaderboard(){
- if(unsubscribe){
-  unsubscribe();
-  unsubscribe=null;
- }
-
- leaderRows=[];
- renderLeaderboard();
-
+ if(unsubscribe){unsubscribe();unsubscribe=null;}
+ leaderRows=[];renderLeaderboard();
  if(!user)return;
-
- unsubscribe=onSnapshot(
-  query(collection(db,"users"),orderBy("points","desc"),limit(50)),
-  snap=>{
-   leaderRows=snap.docs.map(d=>({id:d.id,...d.data()}));
-   renderLeaderboard();
-   renderStats();
-   clearNotice("leaderNotice");
-  },
-  e=>notice("leaderNotice","Leaderboard error: "+errorText(e),"error")
- );
+ unsubscribe=onSnapshot(query(collection(db,"users"),orderBy("points","desc"),limit(50)),snap=>{
+  leaderRows=snap.docs.map(d=>({id:d.id,...d.data()}));
+  renderLeaderboard();renderStats();clearNotice("leaderNotice");
+ },e=>notice("leaderNotice","Leaderboard error: "+errorText(e),"error"));
 }
 
 $("authForm").addEventListener("submit",async e=>{
- e.preventDefault();
- clearNotice("authNotice");
-
- $("signInBtn").disabled=true;
- $("signUpBtn").disabled=true;
-
+ e.preventDefault();clearNotice("authNotice");
+ $("signInBtn").disabled=true;$("signUpBtn").disabled=true;
  try{
-  await signInWithEmailAndPassword(
-   auth,
-   $("email").value.trim(),
-   $("password").value
-  );
-
+  await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
   notice("authNotice","Signed in successfully.","success");
-
- }catch(err){
-  notice("authNotice",errorText(err),"error");
-
- }finally{
-  $("signInBtn").disabled=false;
-  $("signUpBtn").disabled=false;
- }
+ }catch(err){notice("authNotice",errorText(err),"error");}
+ finally{$("signInBtn").disabled=false;$("signUpBtn").disabled=false;}
 });
-
 $("signUpBtn").addEventListener("click",async()=>{
  clearNotice("authNotice");
-
  let name;
-
- try{
-  name=validateName($("displayName").value);
- }catch(e){
-  notice("authNotice",e.message,"error");
-  return;
- }
-
+ try{name=validateName($("displayName").value);}
+ catch(e){notice("authNotice",e.message,"error");return;}
  if(!$("email").value.trim()||!$("password").value){
-  notice("authNotice","Enter an email and password first.","error");
-  return;
+  notice("authNotice","Enter an email and password first.","error");return;
  }
-
- $("signInBtn").disabled=true;
- $("signUpBtn").disabled=true;
-
+ $("signInBtn").disabled=true;$("signUpBtn").disabled=true;
  try{
-  const cred=await createUserWithEmailAndPassword(
-   auth,
-   $("email").value.trim(),
-   $("password").value
-  );
-
+  const cred=await createUserWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
   await updateProfile(cred.user,{displayName:name});
   await ensureUserDoc(cred.user,name);
-
   notice("authNotice","Account created successfully.","success");
-
- }catch(e){
-  notice("authNotice",errorText(e),"error");
-
- }finally{
-  $("signInBtn").disabled=false;
-  $("signUpBtn").disabled=false;
- }
+ }catch(e){notice("authNotice",errorText(e),"error");}
+ finally{$("signInBtn").disabled=false;$("signUpBtn").disabled=false;}
 });
-
 $("profileForm").addEventListener("submit",async e=>{
- e.preventDefault();
- clearNotice("profileNotice");
-
- if(!user)return;
-
- let name;
-
- try{
-  name=validateName($("newDisplayName").value);
- }catch(err){
-  notice("profileNotice",err.message,"error");
-  return;
- }
-
+ e.preventDefault();clearNotice("profileNotice");if(!user)return;
+ let name;try{name=validateName($("newDisplayName").value);}
+ catch(err){notice("profileNotice",err.message,"error");return;}
  try{
   await updateDoc(doc(db,"users",user.uid),{displayName:name});
   await updateProfile(user,{displayName:name});
-
   userData={...userData,displayName:name};
   $("accountName").textContent=name;
-
   notice("profileNotice","Display name updated.","success");
-
- }catch(err){
-  notice("profileNotice",errorText(err),"error");
- }
+ }catch(err){notice("profileNotice",errorText(err),"error");}
 });
-
 $("signOutBtn").addEventListener("click",async()=>{
- try{
-  await signOut(auth);
- }catch(e){
-  notice("profileNotice",errorText(e),"error");
- }
+ try{await signOut(auth);}catch(e){notice("profileNotice",errorText(e),"error");}
 });
-
 $("headerAccount").addEventListener("click",()=>setTab("account"));
+
 
 onAuthStateChanged(auth,async u=>{
  user=u;
-
  $("signedOut").classList.toggle("hidden",!!u);
  $("signedIn").classList.toggle("hidden",!u);
  $("headerAccount").textContent=u?"My account":"Sign in";
-
  if(u){
-  $("statusDot").classList.add("online");
-  $("statusText").textContent="Signed in";
-
-  try{
-   await refreshProfile();
-   startLeaderboard();
-
-   $("welcomeText").textContent=
-    "Welcome back, "+(userData.displayName||"member")+
-    ". Keep up your recycling progress.";
-
-  }catch(e){
-   notice("profileNotice",errorText(e),"error");
-  }
-
+  $("statusDot").classList.add("online");$("statusText").textContent="Signed in";
+  try{await refreshProfile();startLeaderboard();$("welcomeText").textContent="Welcome back, "+(userData.displayName||"member")+". Keep up your recycling progress.";}
+  catch(e){notice("profileNotice",errorText(e),"error");}
  }else{
-  userData=null;
-  leaderRows=[];
-
-  $("statusDot").classList.remove("online");
-  $("statusText").textContent="Not signed in";
-
-  if(unsubscribe){
-   unsubscribe();
-   unsubscribe=null;
-  }
-
-  renderStats();
-  renderLeaderboard();
-
-  $("welcomeText").textContent=
-   "Sign in to track your points and redeem rewards.";
+  userData=null;leaderRows=[];
+  $("statusDot").classList.remove("online");$("statusText").textContent="Not signed in";
+  if(unsubscribe){unsubscribe();unsubscribe=null;}
+  renderStats();renderLeaderboard();
+  $("welcomeText").textContent="Sign in to track your points and redeem rewards.";
  }
 });
-
-window.addEventListener("online",()=>{
- $("statusText").textContent=user?"Signed in":"Online";
-});
-
-window.addEventListener("offline",()=>{
- $("statusText").textContent="Offline";
- $("statusDot").classList.remove("online");
-});
+window.addEventListener("online",()=>{$("statusText").textContent=user?"Signed in":"Online";});
+window.addEventListener("offline",()=>{$("statusText").textContent="Offline";$("statusDot").classList.remove("online");});
 
 renderRewards();
 renderStats();
