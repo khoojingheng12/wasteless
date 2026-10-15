@@ -86,7 +86,7 @@ h2{font-size:16px;letter-spacing:-.3px;margin:0}
 .stat-label{font-size:11px;color:var(--muted)}
 .stat-value{font-size:28px;font-weight:780;letter-spacing:-1px;margin-top:12px}
 .stat-foot{font-size:10px;color:var(--muted);line-height:1.5;margin-top:5px}
-.quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .quick{border:1px solid var(--line);background:var(--surface);border-radius:14px;
   padding:17px;text-align:left;color:var(--text)}
 .quick:hover{border-color:#b6cfba;background:var(--soft)}
@@ -95,6 +95,16 @@ h2{font-size:16px;letter-spacing:-.3px;margin:0}
 .quick-icon svg{width:21px;height:21px}
 .quick strong{display:block;font-size:12px}
 .quick span:last-child{display:block;font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5}
+.scan-box{padding:30px 18px;border:1px dashed var(--line);border-radius:15px;
+  background:var(--soft);text-align:center}
+.scan-symbol{margin:0 auto 14px;width:57px;height:57px;border-radius:16px;
+  display:grid;place-items:center;background:var(--light);color:var(--green)}
+.scan-symbol svg{width:30px;height:30px}
+.scan-box h3{font-size:15px;margin:0 0 8px}
+.scan-box p{font-size:12px;color:var(--muted);line-height:1.7;max-width:370px;margin:0 auto 17px}
+.actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+#cameraVideo{width:100%;max-height:340px;object-fit:cover;background:#111;
+  border-radius:12px;margin-top:16px}
 .hidden{display:none!important}
 .notice{display:none;margin-top:13px;padding:12px 13px;border-radius:10px;
   font-size:12px;line-height:1.6;overflow-wrap:anywhere}
@@ -196,13 +206,14 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
     <div>
       <div class="eyebrow">Small actions. Real impact.</div>
       <h1 id="heroTitle">A little less waste.<br>A better tomorrow.</h1>
-      <p id="heroDescription">Collect points and redeem rewards. Every sustainable action helps build a more responsible community.</p>
+      <p id="heroDescription">Recycle at participating bins, collect points, and redeem rewards. Every verified action helps build a more sustainable community.</p>
     </div>
     <div class="hero-art" id="heroIcon"></div>
   </section>
 
   <nav class="tabs" aria-label="Main navigation">
     <button class="tab active" data-tab="dashboard" type="button"></button>
+    <button class="tab" data-tab="scan" type="button"></button>
     <button class="tab" data-tab="rewards" type="button"></button>
     <button class="tab" data-tab="leaderboard" type="button"></button>
     <button class="tab" data-tab="account" type="button"></button>
@@ -219,11 +230,13 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
       <div class="stack">
         <section class="panel">
           <div class="panel-head"><div><h2>Welcome to WasteLess</h2><p class="sub">Your recycling journey starts here.</p></div><span class="section-icon" id="dashboardIcon"></span></div>
-          <p class="sub" id="welcomeText">Sign in to track your points and redeem rewards.</p>
+          <p class="sub" id="welcomeText">Sign in to track your points, verify recycling actions and redeem rewards.</p>
+          <div style="margin-top:18px"><button class="btn" data-go="scan" type="button">Scan a recycling QR code</button></div>
         </section>
         <section class="panel">
           <div class="panel-head"><div><h2>Quick access</h2><p class="sub">Everything you need, one tap away.</p></div></div>
           <div class="quick-grid">
+            <button class="quick" data-go="scan" type="button"><span class="quick-icon" id="quickScanIcon"></span><strong>Scan QR</strong><span>Verify a recycling action</span></button>
             <button class="quick" data-go="rewards" type="button"><span class="quick-icon" id="quickRewardIcon"></span><strong>Rewards</strong><span>Browse available rewards</span></button>
             <button class="quick" data-go="leaderboard" type="button"><span class="quick-icon" id="quickLeaderIcon"></span><strong>Leaderboard</strong><span>See community rankings</span></button>
           </div>
@@ -242,6 +255,24 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
         </section>
       </div>
     </div>
+  </section>
+
+  <section class="page" id="page-scan">
+    <section class="panel">
+      <div class="panel-head"><div><h2>Scan a recycling QR code</h2><p class="sub">Only official participating-bin QR codes can be verified.</p></div><span class="section-icon" id="scanIcon"></span></div>
+      <div class="scan-box">
+        <div class="scan-symbol" id="scanSymbol"></div>
+        <h3>Ready to recycle?</h3>
+        <p>Sign in, allow camera access, and point your camera at the official WasteLess QR code.</p>
+        <div class="actions">
+          <button class="btn" id="startScan" type="button">Open camera</button>
+          <button class="btn secondary hidden" id="stopScan" type="button">Stop camera</button>
+        </div>
+        <video id="cameraVideo" class="hidden" playsinline muted></video>
+        <div class="notice" id="scanNotice" role="status" aria-live="polite"></div>
+      </div>
+      <p class="note">Camera access requires HTTPS or localhost and browser permission. Server-side QR verification must be deployed before points can be awarded.</p>
+    </section>
   </section>
 
   <section class="page" id="page-rewards">
@@ -313,7 +344,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
         </section>
         <section class="panel">
           <h2>About WasteLess</h2>
-          <p class="sub">WasteLess encourages recycling by rewarding sustainable actions. Collect points and redeem available rewards.</p>
+          <p class="sub">WasteLess encourages recycling by rewarding verified actions. Scan participating-bin QR codes, collect points and redeem available rewards.</p>
           <p class="note">Points and redemptions must be processed by trusted server functions. Never trust a browser-only points balance.</p>
         </section>
       </div>
@@ -325,9 +356,11 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
 </div>
 
 <script type="module">
+
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import {getFirestore,doc,getDoc,setDoc,updateDoc,collection,query,orderBy,limit,onSnapshot,serverTimestamp,runTransaction} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import {getFirestore,doc,getDoc,setDoc,updateDoc,collection,query,orderBy,limit,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import {getFunctions,httpsCallable} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-functions.js";
 
 const firebaseConfig={
   apiKey:"AIzaSyCVfxa0DOThWiLc6PaL8nZGje6GB0n-C_g",
@@ -341,6 +374,9 @@ const firebaseConfig={
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
+const functions=getFunctions(app,"us-central1");
+const verifyRecycleQr=httpsCallable(functions,"verifyRecycleQr");
+const redeemReward=httpsCallable(functions,"redeemReward");
 const $=id=>document.getElementById(id);
 
 const themeNames={light:"Light",dark:"Dark",forest:"Forest",ocean:"Ocean"};
@@ -363,7 +399,7 @@ let initialTheme="light";
 try{initialTheme=localStorage.getItem("wasteless-theme")||"light";}catch(e){}
 applyTheme(initialTheme,false);
 
-let user=null,userData=null,leaderRows=[],unsubscribe=null;
+let user=null,userData=null,leaderRows=[],unsubscribe=null,stream=null,frame=null,scanBusy=false;
 
 const rewards=[
 {id:"reusable-bottle",name:"Reusable Bottle",desc:"A bottle for everyday hydration.",cost:300,icon:"bottle"},
@@ -384,6 +420,7 @@ const icons={
   theme:'<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z"/>',
   leaf:'<path d="M20 4c-9 0-15 4-15 11a5 5 0 0 0 5 5c7 0 11-7 10-16Z"/><path d="M4 21c3-6 7-9 12-12"/>',
   dashboard:'<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/>',
+  scan:'<path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><rect x="7" y="7" width="4" height="4"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><path d="M14 14h3v3h-3zM19 14v2M14 19h2"/>',
   rewards:'<path d="M20 12v9H4v-9M2 7h20v5H2zM12 7v14"/><path d="M12 7H7.5a2.5 2.5 0 1 1 2.5-2.5C10 6 12 7 12 7ZM12 7h4.5A2.5 2.5 0 1 0 14 4.5C14 6 12 7 12 7Z"/>',
   leaderboard:'<path d="M4 19V9M10 19V4M16 19v-7M22 19H2"/>',
   account:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
@@ -432,6 +469,7 @@ function setTab(name){
  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===`page-${name}`));
  const titles={
  dashboard:["A little less waste.<br>A better tomorrow.","Recycle, collect points, and make a difference."],
+ scan:["Every scan counts.","Verify your recycling action at a participating bin."],
  rewards:["Good choices. Great rewards.","Use your verified points to redeem useful items."],
  leaderboard:["Progress, together.","See how the WasteLess community is doing."],
  account:["Your WasteLess account.","Manage your profile and track your contributions."]
@@ -443,7 +481,7 @@ function setTab(name){
  window.scrollTo({top:0,behavior:"smooth"});
 }
 document.querySelectorAll(".tab").forEach(b=>{
- const labels={dashboard:["dashboard","Home"],rewards:["rewards","Rewards"],leaderboard:["leaderboard","Leaderboard"],account:["account","Account"]};
+ const labels={dashboard:["dashboard","Home"],scan:["scan","Scan"],rewards:["rewards","Rewards"],leaderboard:["leaderboard","Leaderboard"],account:["account","Account"]};
  const [ico,label]=labels[b.dataset.tab];
  b.innerHTML=svg(ico)+`<span>${label}</span>`;
  b.addEventListener("click",()=>setTab(b.dataset.tab));
@@ -452,8 +490,11 @@ document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=
 $("brandIcon").innerHTML=svg("leaf");
 $("heroIcon").innerHTML=svg("leaf");
 $("dashboardIcon").innerHTML=svg("dashboard");
+$("quickScanIcon").innerHTML=svg("scan");
 $("quickRewardIcon").innerHTML=svg("rewards");
 $("quickLeaderIcon").innerHTML=svg("leaderboard");
+$("scanIcon").innerHTML=svg("scan");
+$("scanSymbol").innerHTML=svg("scan");
 $("rewardIcon").innerHTML=svg("rewards");
 $("leaderIcon").innerHTML=svg("leaderboard");
 $("accountIcon").innerHTML=svg("account");
@@ -484,34 +525,12 @@ async function redeem(r,btn){
  if(!confirm(`Redeem ${r.name} for ${fmt(r.cost)} points?`))return;
  btn.disabled=true;btn.textContent="Processing…";
  try{
-  const userRef=doc(db,"users",user.uid);
-  const redemptionRef=doc(collection(db,"redemptions"));
-  await runTransaction(db,async transaction=>{
-   const userSnap=await transaction.get(userRef);
-   if(!userSnap.exists())throw new Error("Your member account could not be found.");
-   const data=userSnap.data();
-   const currentPoints=Number(data.points||0);
-   if(!Number.isFinite(currentPoints)||currentPoints<0)throw new Error("Your points balance is invalid.");
-   if(currentPoints<r.cost)throw new Error(`Not enough points. You need ${fmt(r.cost)} points, but have ${fmt(currentPoints)}.`);
-   transaction.update(userRef,{points:currentPoints-r.cost});
-   transaction.set(redemptionRef,{
-    userId:user.uid,
-    userEmail:user.email||"",
-    rewardId:r.id,
-    rewardName:r.name,
-    pointsSpent:r.cost,
-    status:"pending",
-    createdAt:serverTimestamp()
-   });
-  });
+  // The server must determine the reward's real price and check stock.
+  const result=await redeemReward({rewardId:r.id});
+  notice("rewardNotice",result?.data?.message||"Redemption request submitted.","success");
   await refreshProfile();
-  notice("rewardNotice",`Redemption recorded! ${r.name} cost ${fmt(r.cost)} points. Your remaining balance is ${fmt(userData.points)} points. The reward is pending fulfilment.`,"success");
- }catch(e){
-  console.error("WasteLess redemption error:",e);
-  const message=errorText(e);
-  notice("rewardNotice","Redemption failed: "+message,"error");
-  alert("Redemption Failed\n\n"+message);
- }finally{btn.disabled=false;btn.textContent="Redeem";}
+ }catch(e){notice("rewardNotice","Redemption failed: "+errorText(e),"error");}
+ finally{btn.disabled=false;btn.textContent="Redeem";}
 }
 function renderStats(){
  const points=user?fmt(userData?.points):"—",visits=user?fmt(userData?.visits):"—";
@@ -541,16 +560,41 @@ function renderLeaderboard(){
   info.append(name,meta);row.append(rank,avatar,info,points);root.append(row);
  });
 }
+
+/* UPDATED: automatically saves email for new users and backfills it for existing users. */
 async function ensureUserDoc(u,name){
- const ref=doc(db,"users",u.uid),snap=await getDoc(ref);
+ const ref=doc(db,"users",u.uid);
+ const snap=await getDoc(ref);
+ const email=(u.email||"").trim();
+
  if(!snap.exists()){
   const n=validateName(name||u.displayName||"WasteLess Member");
-  await setDoc(ref,{displayName:n,points:0,visits:0,createdAt:serverTimestamp()});
-  return {displayName:n,points:0,visits:0};
+  const newUserData={
+   displayName:n,
+   email:email,
+   points:0,
+   visits:0,
+   createdAt:serverTimestamp()
+  };
+  await setDoc(ref,newUserData);
+  return {displayName:n,email:email,points:0,visits:0};
  }
+
  const d=snap.data();
- return {displayName:d.displayName||u.displayName||"WasteLess Member",points:Number(d.points||0),visits:Number(d.visits||0)};
+
+ // Add or refresh the email field on existing member documents.
+ if(email&&d.email!==email){
+  await updateDoc(ref,{email:email});
+ }
+
+ return {
+  displayName:d.displayName||u.displayName||"WasteLess Member",
+  email:email||d.email||"",
+  points:Number(d.points||0),
+  visits:Number(d.visits||0)
+ };
 }
+
 async function refreshProfile(){
  if(!user)return;
  userData=await ensureUserDoc(user);
@@ -608,10 +652,59 @@ $("profileForm").addEventListener("submit",async e=>{
  }catch(err){notice("profileNotice",errorText(err),"error");}
 });
 $("signOutBtn").addEventListener("click",async()=>{
- try{await signOut(auth);}catch(e){notice("profileNotice",errorText(e),"error");}
+ await stopScanner();try{await signOut(auth);}catch(e){notice("profileNotice",errorText(e),"error");}
 });
 $("headerAccount").addEventListener("click",()=>setTab("account"));
 
+async function startScanner(){
+ clearNotice("scanNotice");
+ if(!user){notice("scanNotice","Sign in before scanning a QR code.");setTab("account");return;}
+ if(!navigator.mediaDevices?.getUserMedia){notice("scanNotice","Camera requires HTTPS or localhost in a supported browser.","error");return;}
+ if(!("BarcodeDetector" in window)){notice("scanNotice","Built-in QR detection is not supported by this browser. Try an updated Chrome browser.","error");return;}
+ try{
+  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});
+  const video=$("cameraVideo");video.srcObject=stream;video.classList.remove("hidden");
+  $("startScan").classList.add("hidden");$("stopScan").classList.remove("hidden");
+  await video.play();
+  const detector=new BarcodeDetector({formats:["qr_code"]});scanBusy=false;
+  const scan=async()=>{
+   if(!stream||scanBusy)return;
+   try{
+    if(video.readyState>=2){
+     const codes=await detector.detect(video);
+     if(codes.length&&codes[0].rawValue){
+      scanBusy=true;await stopScanner();await submitQr(codes[0].rawValue);return;
+     }
+    }
+   }catch(e){console.warn("QR detection error",e);}
+   if(stream)frame=requestAnimationFrame(scan);
+  };
+  frame=requestAnimationFrame(scan);
+  notice("scanNotice","Camera active. Point it at an official WasteLess QR code.");
+ }catch(e){
+  await stopScanner();notice("scanNotice","Could not open camera: "+(e.message||"permission denied"),"error");
+ }
+}
+async function stopScanner(){
+ if(frame!==null){cancelAnimationFrame(frame);frame=null;}
+ if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+ const video=$("cameraVideo");video.pause();video.srcObject=null;video.classList.add("hidden");
+ $("stopScan").classList.add("hidden");$("startScan").classList.remove("hidden");
+}
+async function submitQr(qrPayload){
+ if(!user){notice("scanNotice","Sign in before verifying a QR code.","error");return;}
+ notice("scanNotice","Verifying QR code with the server…");
+ $("startScan").disabled=true;
+ try{
+  const result=await verifyRecycleQr({qrPayload});
+  notice("scanNotice",result?.data?.message||"Recycling action verified.","success");
+  await refreshProfile();
+ }catch(e){notice("scanNotice","Verification failed: "+errorText(e),"error");}
+ finally{$("startScan").disabled=false;}
+}
+$("startScan").addEventListener("click",startScanner);
+$("stopScan").addEventListener("click",stopScanner);
+window.addEventListener("pagehide",()=>{if(frame!==null)cancelAnimationFrame(frame);if(stream)stream.getTracks().forEach(t=>t.stop());});
 
 onAuthStateChanged(auth,async u=>{
  user=u;
@@ -627,7 +720,7 @@ onAuthStateChanged(auth,async u=>{
   $("statusDot").classList.remove("online");$("statusText").textContent="Not signed in";
   if(unsubscribe){unsubscribe();unsubscribe=null;}
   renderStats();renderLeaderboard();
-  $("welcomeText").textContent="Sign in to track your points and redeem rewards.";
+  $("welcomeText").textContent="Sign in to track your points, verify recycling actions and redeem rewards.";
  }
 });
 window.addEventListener("online",()=>{$("statusText").textContent=user?"Signed in":"Online";});
