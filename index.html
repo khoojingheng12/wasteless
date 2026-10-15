@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,23 +9,7 @@
 :root{
   --bg:#f7f8f6;--surface:#fff;--text:#202720;--muted:#788078;
   --line:#e5e9e3;--green:#28784c;--dark:#1d603b;--light:#eaf4ec;
-  --soft:#f7f9f6;--tab-bg:#ecefea;--tab-text:#737b73;--input-bg:#fff;
   --radius:17px;
-}
-body[data-theme="dark"]{
-  --bg:#151a17;--surface:#202722;--text:#edf3ed;--muted:#a3afa5;
-  --line:#354139;--green:#73c791;--dark:#4fa66f;--light:#293e30;
-  --soft:#252e28;--tab-bg:#202722;--tab-text:#b4beb6;--input-bg:#1a211c;
-}
-body[data-theme="forest"]{
-  --bg:#edf4ed;--surface:#fbfdf9;--text:#193b29;--muted:#647b69;
-  --line:#d4e3d4;--green:#246b43;--dark:#174d30;--light:#dcecdf;
-  --soft:#f0f6ef;--tab-bg:#dce9dc;--tab-text:#58705d;--input-bg:#fff;
-}
-body[data-theme="ocean"]{
-  --bg:#f1f7fa;--surface:#fff;--text:#1d3038;--muted:#71838c;
-  --line:#dbe7ec;--green:#237b91;--dark:#185f73;--light:#dff0f4;
-  --soft:#f2f8fa;--tab-bg:#e2eef2;--tab-text:#637e88;--input-bg:#fff;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);
@@ -49,8 +32,8 @@ header{height:75px;display:flex;align-items:center;justify-content:space-between
 .btn{border:1px solid transparent;border-radius:10px;padding:11px 15px;
   background:var(--green);color:white;font-size:12px;font-weight:700}
 .btn:hover:not(:disabled){background:var(--dark)}
-.btn.secondary{background:var(--surface);color:var(--text);border-color:var(--line)}
-.btn.secondary:hover:not(:disabled){background:var(--soft)}
+.btn.secondary{background:white;color:var(--text);border-color:var(--line)}
+.btn.secondary:hover:not(:disabled){background:#f1f4ef}
 .btn.subtle{background:transparent;color:var(--muted);border-color:var(--line)}
 main{padding-top:28px}
 .hero{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:25px}
@@ -61,13 +44,13 @@ h1{font-size:clamp(29px,4vw,42px);letter-spacing:-1.7px;line-height:1.12;margin:
 .hero-art{flex-shrink:0;width:85px;height:85px;border-radius:25px;
   display:grid;place-items:center;background:var(--light);color:var(--green)}
 .hero-art svg{width:44px;height:44px}
-.tabs{display:flex;gap:5px;padding:5px;background:var(--tab-bg);border-radius:13px;
+.tabs{display:flex;gap:5px;padding:5px;background:#ecefea;border-radius:13px;
   margin-bottom:23px;overflow-x:auto}
 .tab{display:flex;align-items:center;justify-content:center;gap:8px;flex:1;
   min-width:max-content;padding:12px 14px;border:0;border-radius:9px;
-  background:transparent;color:var(--tab-text);font-size:12px;font-weight:650}
+  background:transparent;color:#737b73;font-size:12px;font-weight:650}
 .tab svg{width:17px;height:17px}
-.tab.active{background:var(--surface);color:var(--green);box-shadow:0 1px 4px #182e1b0c}
+.tab.active{background:white;color:var(--green);box-shadow:0 1px 4px #182e1b0c}
 .page{display:none}
 .page.active{display:block;animation:appear .18s ease}
 @keyframes appear{from{opacity:.5;transform:translateY(3px)}to{opacity:1;transform:none}}
@@ -82,21 +65,21 @@ h2{font-size:16px;letter-spacing:-.3px;margin:0}
   background:var(--light);color:var(--green);flex-shrink:0}
 .section-icon svg{width:20px;height:20px}
 .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}
-.stat{padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:15px}
+.stat{padding:18px;background:white;border:1px solid var(--line);border-radius:15px}
 .stat-label{font-size:11px;color:var(--muted)}
 .stat-value{font-size:28px;font-weight:780;letter-spacing:-1px;margin-top:12px}
 .stat-foot{font-size:10px;color:var(--muted);line-height:1.5;margin-top:5px}
 .quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.quick{border:1px solid var(--line);background:var(--surface);border-radius:14px;
+.quick{border:1px solid var(--line);background:white;border-radius:14px;
   padding:17px;text-align:left;color:var(--text)}
-.quick:hover{border-color:#b6cfba;background:var(--soft)}
+.quick:hover{border-color:#b6cfba;background:#fbfdfb}
 .quick-icon{width:38px;height:38px;border-radius:11px;background:var(--light);
   color:var(--green);display:grid;place-items:center;margin-bottom:13px}
 .quick-icon svg{width:21px;height:21px}
 .quick strong{display:block;font-size:12px}
 .quick span:last-child{display:block;font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5}
-.scan-box{padding:30px 18px;border:1px dashed var(--line);border-radius:15px;
-  background:var(--soft);text-align:center}
+.scan-box{padding:30px 18px;border:1px dashed #cbd8ca;border-radius:15px;
+  background:#fafcf9;text-align:center}
 .scan-symbol{margin:0 auto 14px;width:57px;height:57px;border-radius:16px;
   display:grid;place-items:center;background:var(--light);color:var(--green)}
 .scan-symbol svg{width:30px;height:30px}
@@ -109,21 +92,21 @@ h2{font-size:16px;letter-spacing:-.3px;margin:0}
 .notice{display:none;margin-top:13px;padding:12px 13px;border-radius:10px;
   font-size:12px;line-height:1.6;overflow-wrap:anywhere}
 .notice.show{display:block}
-.notice.info{background:var(--light);color:var(--text)}
-.notice.success{background:var(--light);color:var(--text)}
+.notice.info{background:#eef3ed;color:#375640}
+.notice.success{background:#eaf6ed;color:#28663e}
 .notice.error{background:#fff0ef;color:#923d37}
 .reward-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
-.reward{min-width:0;border:1px solid var(--line);border-radius:14px;background:var(--surface);
+.reward{min-width:0;border:1px solid var(--line);border-radius:14px;background:white;
   padding:12px;display:flex;flex-direction:column;transition:border-color .15s}
 .reward:hover{border-color:#b8cdb9}
-.reward-art{height:88px;border-radius:11px;background:var(--soft);color:var(--green);
+.reward-art{height:88px;border-radius:11px;background:#f1f6ef;color:var(--green);
   display:grid;place-items:center;margin-bottom:12px}
 .reward-art svg{width:37px;height:37px}
 .reward h3{font-size:12px;line-height:1.5;margin:0 0 5px}
 .reward-desc{font-size:11px;color:var(--muted);line-height:1.5;margin:0 0 12px;flex:1}
 .reward-cost{font-size:12px;font-weight:750;margin-bottom:10px}
 .reward .btn{width:100%;padding:9px 5px;font-size:11px}
-.leader-row{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}
+.leader-row{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid #eff1ed}
 .leader-row:last-child{border-bottom:0}
 .rank{width:25px;text-align:center;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0}
 .avatar{width:36px;height:36px;border-radius:50%;background:var(--light);color:var(--green);
@@ -133,12 +116,12 @@ h2{font-size:16px;letter-spacing:-.3px;margin:0}
 .leader-meta{font-size:10px;color:var(--muted);margin-top:4px}
 .leader-points{font-size:12px;font-weight:750;white-space:nowrap}
 .field{display:grid;gap:7px;margin-bottom:13px}
-.field label{font-size:12px;font-weight:650;color:var(--text)}
-.field input{width:100%;border:1px solid var(--line);background:var(--input-bg);border-radius:10px;
+.field label{font-size:12px;font-weight:650;color:#525a52}
+.field input{width:100%;border:1px solid #dfe5dd;background:white;border-radius:10px;
   padding:12px;outline:none;font-size:13px;color:var(--text)}
 .field input:focus{border-color:var(--green);box-shadow:0 0 0 3px #28784c18}
 .form-actions{display:flex;gap:8px;flex-wrap:wrap}
-.account-details{padding:14px;background:var(--soft);border-radius:11px;margin-bottom:16px;overflow-wrap:anywhere}
+.account-details{padding:14px;background:#f7f9f6;border-radius:11px;margin-bottom:16px;overflow-wrap:anywhere}
 .account-name{font-size:14px;font-weight:750}
 .account-email{font-size:11px;color:var(--muted);margin-top:5px}
 .note{font-size:11px;line-height:1.7;color:var(--muted);margin-top:14px}
@@ -146,15 +129,6 @@ h2{font-size:16px;letter-spacing:-.3px;margin:0}
 footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
   display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
   color:var(--muted);font-size:11px}
-.theme-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
-.theme-choice{display:flex;align-items:center;gap:10px;text-align:left;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);font-size:12px;font-weight:700}
-.theme-choice[aria-pressed="true"]{border-color:var(--green);box-shadow:0 0 0 2px #28784c20}
-.theme-swatch{width:25px;height:25px;flex-shrink:0;border-radius:8px;border:1px solid #00000012}
-.theme-swatch.light{background:linear-gradient(135deg,#f7f8f6 50%,#28784c 50%)}
-.theme-swatch.dark{background:linear-gradient(135deg,#151a17 50%,#73c791 50%)}
-.theme-swatch.forest{background:linear-gradient(135deg,#edf4ed 50%,#246b43 50%)}
-.theme-swatch.ocean{background:linear-gradient(135deg,#f1f7fa 50%,#237b91 50%)}
-.theme-status{font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6}
 @media(max-width:850px){
  .grid{grid-template-columns:1fr}
  .reward-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -330,19 +304,6 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
           <div class="leader-row"><div class="leader-info"><div class="leader-name">Community rank</div></div><div id="accountRank" class="leader-points">—</div></div>
         </section>
         <section class="panel">
-          <div class="panel-head">
-            <div><h2>Appearance</h2><p class="sub">Personalise your WasteLess experience.</p></div>
-            <span class="section-icon" id="themeIcon" aria-hidden="true"></span>
-          </div>
-          <div class="theme-options" role="group" aria-label="Choose a colour theme">
-            <button class="theme-choice" type="button" data-theme-choice="light" aria-pressed="true"><span class="theme-swatch light"></span>Light</button>
-            <button class="theme-choice" type="button" data-theme-choice="dark" aria-pressed="false"><span class="theme-swatch dark"></span>Dark</button>
-            <button class="theme-choice" type="button" data-theme-choice="forest" aria-pressed="false"><span class="theme-swatch forest"></span>Forest</button>
-            <button class="theme-choice" type="button" data-theme-choice="ocean" aria-pressed="false"><span class="theme-swatch ocean"></span>Ocean</button>
-          </div>
-          <p class="theme-status" id="themeStatus" aria-live="polite">Light theme selected.</p>
-        </section>
-        <section class="panel">
           <h2>About WasteLess</h2>
           <p class="sub">WasteLess encourages recycling by rewarding verified actions. Scan participating-bin QR codes, collect points and redeem available rewards.</p>
           <p class="note">Points and redemptions must be processed by trusted server functions. Never trust a browser-only points balance.</p>
@@ -358,7 +319,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import {getFirestore,doc,getDoc,setDoc,updateDoc,collection,query,orderBy,limit,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import {getFirestore,doc,getDoc,setDoc,updateDoc,collection,query,orderBy,limit,onSnapshot,serverTimestamp,runTransaction} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 import {getFunctions,httpsCallable} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-functions.js";
 
 const firebaseConfig={
@@ -375,28 +336,7 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 const functions=getFunctions(app,"us-central1");
 const verifyRecycleQr=httpsCallable(functions,"verifyRecycleQr");
-const redeemReward=httpsCallable(functions,"redeemReward");
 const $=id=>document.getElementById(id);
-
-const themeNames={light:"Light",dark:"Dark",forest:"Forest",ocean:"Ocean"};
-function applyTheme(theme,save=true){
-  if(!Object.prototype.hasOwnProperty.call(themeNames,theme)) theme="light";
-  document.body.dataset.theme=theme;
-  document.querySelectorAll("[data-theme-choice]").forEach(button=>{
-    button.setAttribute("aria-pressed",String(button.dataset.themeChoice===theme));
-  });
-  $("themeStatus").textContent=`${themeNames[theme]} theme selected.`;
-  document.querySelector('meta[name="theme-color"]').content={
-    light:"#f7f8f6",dark:"#151a17",forest:"#edf4ed",ocean:"#f1f7fa"
-  }[theme];
-  if(save){try{localStorage.setItem("wasteless-theme",theme);}catch(e){}}
-}
-document.querySelectorAll("[data-theme-choice]").forEach(button=>{
-  button.addEventListener("click",()=>applyTheme(button.dataset.themeChoice));
-});
-let initialTheme="light";
-try{initialTheme=localStorage.getItem("wasteless-theme")||"light";}catch(e){}
-applyTheme(initialTheme,false);
 
 let user=null,userData=null,leaderRows=[],unsubscribe=null,stream=null,frame=null,scanBusy=false;
 
@@ -416,7 +356,6 @@ const rewards=[
 ];
 
 const icons={
-  theme:'<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z"/>',
   leaf:'<path d="M20 4c-9 0-15 4-15 11a5 5 0 0 0 5 5c7 0 11-7 10-16Z"/><path d="M4 21c3-6 7-9 12-12"/>',
   dashboard:'<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/>',
   scan:'<path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><rect x="7" y="7" width="4" height="4"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><path d="M14 14h3v3h-3zM19 14v2M14 19h2"/>',
@@ -497,7 +436,6 @@ $("scanSymbol").innerHTML=svg("scan");
 $("rewardIcon").innerHTML=svg("rewards");
 $("leaderIcon").innerHTML=svg("leaderboard");
 $("accountIcon").innerHTML=svg("account");
-$("themeIcon").innerHTML=svg("theme");
 
 function renderRewards(){
  const root=$("rewards");root.replaceChildren();
@@ -518,19 +456,72 @@ function renderRewards(){
  const desc=document.createElement("p");desc.className="sub";desc.textContent=fmt(r.cost)+" points";
  $("featuredReward").replaceChildren(art,title,desc);
 }
+
 async function redeem(r,btn){
  clearNotice("rewardNotice");
  if(!user){notice("rewardNotice","Sign in before redeeming a reward.");setTab("account");return;}
  if(!confirm(`Redeem ${r.name} for ${fmt(r.cost)} points?`))return;
  btn.disabled=true;btn.textContent="Processing…";
  try{
-  // The server must determine the reward's real price and check stock.
-  const result=await redeemReward({rewardId:r.id});
-  notice("rewardNotice",result?.data?.message||"Redemption request submitted.","success");
+  const userRef=doc(db,"users",user.uid);
+  const redemptionRef=doc(collection(db,"redemptions"));
+
+  const result=await runTransaction(db,async transaction=>{
+   const userSnap=await transaction.get(userRef);
+
+   if(!userSnap.exists())throw new Error("Member account not found.");
+
+   const points=userSnap.data().points;
+
+   if(typeof points!=="number"||!Number.isFinite(points)||points<0)
+    throw new Error("Your points balance is invalid.");
+
+   if(points<r.cost)
+    throw new Error(`Not enough points. You have ${fmt(points)} points, but this reward costs ${fmt(r.cost)}.`);
+
+   const remaining=points-r.cost;
+
+   transaction.update(userRef,{points:remaining});
+
+   transaction.set(redemptionRef,{
+    memberId:user.uid,
+    memberEmail:user.email||"",
+    rewardId:r.id,
+    rewardName:r.name,
+    pointsSpent:r.cost,
+    createdAt:serverTimestamp(),
+    status:"redeemed"
+   });
+
+   return {remaining,spent:r.cost};
+  });
+
+  userData={...userData,points:result.remaining};
+  renderStats();
+
+  notice(
+   "rewardNotice",
+   `Successfully redeemed ${r.name}! ${fmt(result.spent)} points deducted. Your new balance is ${fmt(result.remaining)} points.`,
+   "success"
+  );
+
   await refreshProfile();
- }catch(e){notice("rewardNotice","Redemption failed: "+errorText(e),"error");}
- finally{btn.disabled=false;btn.textContent="Redeem";}
+
+ }catch(e){
+  console.error("Redemption error:",e);
+
+  const message=e.code==="permission-denied"
+   ?"Firestore denied redemption. Check your security rules."
+   :e.message||"Please try again.";
+
+  notice("rewardNotice","Redemption failed: "+message,"error");
+
+ }finally{
+  btn.disabled=false;
+  btn.textContent="Redeem";
+ }
 }
+
 function renderStats(){
  const points=user?fmt(userData?.points):"—",visits=user?fmt(userData?.visits):"—";
  $("pointsValue").textContent=points;$("visitsValue").textContent=visits;
@@ -543,6 +534,7 @@ function renderStats(){
   ?`${fmt(userData?.visits)} verified actions completed. You have ${points} points available.`
   :"Sign in to view your progress.";
 }
+
 function renderLeaderboard(){
  const root=$("leaderboard");root.replaceChildren();
  if(!user){const p=document.createElement("div");p.className="empty";p.textContent="Sign in to view the community leaderboard.";root.append(p);return;}
@@ -559,6 +551,7 @@ function renderLeaderboard(){
   info.append(name,meta);row.append(rank,avatar,info,points);root.append(row);
  });
 }
+
 async function ensureUserDoc(u,name){
  const ref=doc(db,"users",u.uid),snap=await getDoc(ref);
  if(!snap.exists()){
@@ -569,6 +562,7 @@ async function ensureUserDoc(u,name){
  const d=snap.data();
  return {displayName:d.displayName||u.displayName||"WasteLess Member",points:Number(d.points||0),visits:Number(d.visits||0)};
 }
+
 async function refreshProfile(){
  if(!user)return;
  userData=await ensureUserDoc(user);
@@ -577,6 +571,7 @@ async function refreshProfile(){
  $("newDisplayName").value=userData.displayName;
  renderStats();
 }
+
 function startLeaderboard(){
  if(unsubscribe){unsubscribe();unsubscribe=null;}
  leaderRows=[];renderLeaderboard();
@@ -596,15 +591,19 @@ $("authForm").addEventListener("submit",async e=>{
  }catch(err){notice("authNotice",errorText(err),"error");}
  finally{$("signInBtn").disabled=false;$("signUpBtn").disabled=false;}
 });
+
 $("signUpBtn").addEventListener("click",async()=>{
  clearNotice("authNotice");
  let name;
  try{name=validateName($("displayName").value);}
  catch(e){notice("authNotice",e.message,"error");return;}
+
  if(!$("email").value.trim()||!$("password").value){
   notice("authNotice","Enter an email and password first.","error");return;
  }
+
  $("signInBtn").disabled=true;$("signUpBtn").disabled=true;
+
  try{
   const cred=await createUserWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
   await updateProfile(cred.user,{displayName:name});
@@ -613,10 +612,13 @@ $("signUpBtn").addEventListener("click",async()=>{
  }catch(e){notice("authNotice",errorText(e),"error");}
  finally{$("signInBtn").disabled=false;$("signUpBtn").disabled=false;}
 });
+
 $("profileForm").addEventListener("submit",async e=>{
  e.preventDefault();clearNotice("profileNotice");if(!user)return;
- let name;try{name=validateName($("newDisplayName").value);}
+ let name;
+ try{name=validateName($("newDisplayName").value);}
  catch(err){notice("profileNotice",err.message,"error");return;}
+
  try{
   await updateDoc(doc(db,"users",user.uid),{displayName:name});
   await updateProfile(user,{displayName:name});
@@ -625,22 +627,30 @@ $("profileForm").addEventListener("submit",async e=>{
   notice("profileNotice","Display name updated.","success");
  }catch(err){notice("profileNotice",errorText(err),"error");}
 });
+
 $("signOutBtn").addEventListener("click",async()=>{
- await stopScanner();try{await signOut(auth);}catch(e){notice("profileNotice",errorText(e),"error");}
+ await stopScanner();
+ try{await signOut(auth);}
+ catch(e){notice("profileNotice",errorText(e),"error");}
 });
+
 $("headerAccount").addEventListener("click",()=>setTab("account"));
 
 async function startScanner(){
  clearNotice("scanNotice");
+
  if(!user){notice("scanNotice","Sign in before scanning a QR code.");setTab("account");return;}
  if(!navigator.mediaDevices?.getUserMedia){notice("scanNotice","Camera requires HTTPS or localhost in a supported browser.","error");return;}
  if(!("BarcodeDetector" in window)){notice("scanNotice","Built-in QR detection is not supported by this browser. Try an updated Chrome browser.","error");return;}
+
  try{
   stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});
   const video=$("cameraVideo");video.srcObject=stream;video.classList.remove("hidden");
   $("startScan").classList.add("hidden");$("stopScan").classList.remove("hidden");
   await video.play();
+
   const detector=new BarcodeDetector({formats:["qr_code"]});scanBusy=false;
+
   const scan=async()=>{
    if(!stream||scanBusy)return;
    try{
@@ -651,24 +661,31 @@ async function startScanner(){
      }
     }
    }catch(e){console.warn("QR detection error",e);}
+
    if(stream)frame=requestAnimationFrame(scan);
   };
+
   frame=requestAnimationFrame(scan);
   notice("scanNotice","Camera active. Point it at an official WasteLess QR code.");
+
  }catch(e){
-  await stopScanner();notice("scanNotice","Could not open camera: "+(e.message||"permission denied"),"error");
+  await stopScanner();
+  notice("scanNotice","Could not open camera: "+(e.message||"permission denied"),"error");
  }
 }
+
 async function stopScanner(){
  if(frame!==null){cancelAnimationFrame(frame);frame=null;}
  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
  const video=$("cameraVideo");video.pause();video.srcObject=null;video.classList.add("hidden");
  $("stopScan").classList.add("hidden");$("startScan").classList.remove("hidden");
 }
+
 async function submitQr(qrPayload){
  if(!user){notice("scanNotice","Sign in before verifying a QR code.","error");return;}
  notice("scanNotice","Verifying QR code with the server…");
  $("startScan").disabled=true;
+
  try{
   const result=await verifyRecycleQr({qrPayload});
   notice("scanNotice",result?.data?.message||"Recycling action verified.","success");
@@ -676,6 +693,7 @@ async function submitQr(qrPayload){
  }catch(e){notice("scanNotice","Verification failed: "+errorText(e),"error");}
  finally{$("startScan").disabled=false;}
 }
+
 $("startScan").addEventListener("click",startScanner);
 $("stopScan").addEventListener("click",stopScanner);
 window.addEventListener("pagehide",()=>{if(frame!==null)cancelAnimationFrame(frame);if(stream)stream.getTracks().forEach(t=>t.stop());});
@@ -685,10 +703,14 @@ onAuthStateChanged(auth,async u=>{
  $("signedOut").classList.toggle("hidden",!!u);
  $("signedIn").classList.toggle("hidden",!u);
  $("headerAccount").textContent=u?"My account":"Sign in";
+
  if(u){
   $("statusDot").classList.add("online");$("statusText").textContent="Signed in";
-  try{await refreshProfile();startLeaderboard();$("welcomeText").textContent="Welcome back, "+(userData.displayName||"member")+". Keep up your recycling progress.";}
-  catch(e){notice("profileNotice",errorText(e),"error");}
+  try{
+   await refreshProfile();
+   startLeaderboard();
+   $("welcomeText").textContent="Welcome back, "+(userData.displayName||"member")+". Keep up your recycling progress.";
+  }catch(e){notice("profileNotice",errorText(e),"error");}
  }else{
   userData=null;leaderRows=[];
   $("statusDot").classList.remove("online");$("statusText").textContent="Not signed in";
@@ -697,6 +719,7 @@ onAuthStateChanged(auth,async u=>{
   $("welcomeText").textContent="Sign in to track your points, verify recycling actions and redeem rewards.";
  }
 });
+
 window.addEventListener("online",()=>{$("statusText").textContent=user?"Signed in":"Online";});
 window.addEventListener("offline",()=>{$("statusText").textContent="Offline";$("statusDot").classList.remove("online");});
 
