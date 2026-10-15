@@ -86,7 +86,7 @@ h2{font-size:16px;letter-spacing:-.3px;margin:0}
 .stat-label{font-size:11px;color:var(--muted)}
 .stat-value{font-size:28px;font-weight:780;letter-spacing:-1px;margin-top:12px}
 .stat-foot{font-size:10px;color:var(--muted);line-height:1.5;margin-top:5px}
-.quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .quick{border:1px solid var(--line);background:var(--surface);border-radius:14px;
   padding:17px;text-align:left;color:var(--text)}
 .quick:hover{border-color:#b6cfba;background:var(--soft)}
@@ -95,22 +95,11 @@ h2{font-size:16px;letter-spacing:-.3px;margin:0}
 .quick-icon svg{width:21px;height:21px}
 .quick strong{display:block;font-size:12px}
 .quick span:last-child{display:block;font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5}
-.scan-box{padding:30px 18px;border:1px dashed var(--line);border-radius:15px;
-  background:var(--soft);text-align:center}
-.scan-symbol{margin:0 auto 14px;width:57px;height:57px;border-radius:16px;
-  display:grid;place-items:center;background:var(--light);color:var(--green)}
-.scan-symbol svg{width:30px;height:30px}
-.scan-box h3{font-size:15px;margin:0 0 8px}
-.scan-box p{font-size:12px;color:var(--muted);line-height:1.7;max-width:370px;margin:0 auto 17px}
-.actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-#cameraVideo{width:100%;max-height:340px;object-fit:cover;background:#111;
-  border-radius:12px;margin-top:16px}
 .hidden{display:none!important}
 .notice{display:none;margin-top:13px;padding:12px 13px;border-radius:10px;
   font-size:12px;line-height:1.6;overflow-wrap:anywhere}
 .notice.show{display:block}
-.notice.info{background:var(--light);color:var(--text)}
-.notice.success{background:var(--light);color:var(--text)}
+.notice.info,.notice.success{background:var(--light);color:var(--text)}
 .notice.error{background:#fff0ef;color:#923d37}
 .reward-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
 .reward{min-width:0;border:1px solid var(--line);border-radius:14px;background:var(--surface);
@@ -206,14 +195,13 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
     <div>
       <div class="eyebrow">Small actions. Real impact.</div>
       <h1 id="heroTitle">A little less waste.<br>A better tomorrow.</h1>
-      <p id="heroDescription">Recycle at participating bins, collect points, and redeem rewards. Every verified action helps build a more sustainable community.</p>
+      <p id="heroDescription">Collect points, redeem rewards, and help build a more sustainable community.</p>
     </div>
     <div class="hero-art" id="heroIcon"></div>
   </section>
 
   <nav class="tabs" aria-label="Main navigation">
     <button class="tab active" data-tab="dashboard" type="button"></button>
-    <button class="tab" data-tab="scan" type="button"></button>
     <button class="tab" data-tab="rewards" type="button"></button>
     <button class="tab" data-tab="leaderboard" type="button"></button>
     <button class="tab" data-tab="account" type="button"></button>
@@ -229,14 +217,13 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
     <div class="grid">
       <div class="stack">
         <section class="panel">
-          <div class="panel-head"><div><h2>Welcome to WasteLess</h2><p class="sub">Your recycling journey starts here.</p></div><span class="section-icon" id="dashboardIcon"></span></div>
-          <p class="sub" id="welcomeText">Sign in to track your points, verify recycling actions and redeem rewards.</p>
-          <div style="margin-top:18px"><button class="btn" data-go="scan" type="button">Scan a recycling QR code</button></div>
+          <div class="panel-head"><div><h2>Welcome to WasteLess</h2><p class="sub">Your sustainability journey starts here.</p></div><span class="section-icon" id="dashboardIcon"></span></div>
+          <p class="sub" id="welcomeText">Sign in to track your points and redeem rewards.</p>
+          <div style="margin-top:18px"><button class="btn" data-go="rewards" type="button">Explore rewards</button></div>
         </section>
         <section class="panel">
           <div class="panel-head"><div><h2>Quick access</h2><p class="sub">Everything you need, one tap away.</p></div></div>
           <div class="quick-grid">
-            <button class="quick" data-go="scan" type="button"><span class="quick-icon" id="quickScanIcon"></span><strong>Scan QR</strong><span>Verify a recycling action</span></button>
             <button class="quick" data-go="rewards" type="button"><span class="quick-icon" id="quickRewardIcon"></span><strong>Rewards</strong><span>Browse available rewards</span></button>
             <button class="quick" data-go="leaderboard" type="button"><span class="quick-icon" id="quickLeaderIcon"></span><strong>Leaderboard</strong><span>See community rankings</span></button>
           </div>
@@ -244,7 +231,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
       </div>
       <div class="stack">
         <section class="panel">
-          <div class="panel-head"><div><h2>Your progress</h2><p class="sub">Your verified contributions add up.</p></div></div>
+          <div class="panel-head"><div><h2>Your progress</h2><p class="sub">Your contributions add up.</p></div></div>
           <div id="progressSummary" class="empty">Sign in to view your progress.</div>
           <button class="btn secondary" data-go="account" type="button" style="margin-top:12px">View account</button>
         </section>
@@ -257,27 +244,9 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
     </div>
   </section>
 
-  <section class="page" id="page-scan">
-    <section class="panel">
-      <div class="panel-head"><div><h2>Scan a recycling QR code</h2><p class="sub">Only official participating-bin QR codes can be verified.</p></div><span class="section-icon" id="scanIcon"></span></div>
-      <div class="scan-box">
-        <div class="scan-symbol" id="scanSymbol"></div>
-        <h3>Ready to recycle?</h3>
-        <p>Sign in, allow camera access, and point your camera at the official WasteLess QR code.</p>
-        <div class="actions">
-          <button class="btn" id="startScan" type="button">Open camera</button>
-          <button class="btn secondary hidden" id="stopScan" type="button">Stop camera</button>
-        </div>
-        <video id="cameraVideo" class="hidden" playsinline muted></video>
-        <div class="notice" id="scanNotice" role="status" aria-live="polite"></div>
-      </div>
-      <p class="note">Camera access requires HTTPS or localhost and browser permission. Server-side QR verification must be deployed before points can be awarded.</p>
-    </section>
-  </section>
-
   <section class="page" id="page-rewards">
     <section class="panel">
-      <div class="panel-head"><div><h2>Reward catalogue</h2><p class="sub">Redeem your verified points for useful items.</p></div><span class="section-icon" id="rewardIcon"></span></div>
+      <div class="panel-head"><div><h2>Reward catalogue</h2><p class="sub">Redeem your points for useful items.</p></div><span class="section-icon" id="rewardIcon"></span></div>
       <div class="stats" style="margin-bottom:18px">
         <article class="stat"><div class="stat-label">Your balance</div><div class="stat-value" id="rewardBalance">—</div><div class="stat-foot">Points available</div></article>
         <article class="stat"><div class="stat-label">Available items</div><div class="stat-value" id="rewardCount">12</div><div class="stat-foot">Catalogue examples</div></article>
@@ -344,7 +313,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
         </section>
         <section class="panel">
           <h2>About WasteLess</h2>
-          <p class="sub">WasteLess encourages recycling by rewarding verified actions. Scan participating-bin QR codes, collect points and redeem available rewards.</p>
+          <p class="sub">WasteLess encourages sustainable habits by rewarding verified contributions. Collect points and redeem available rewards.</p>
           <p class="note">Points and redemptions must be processed by trusted server functions. Never trust a browser-only points balance.</p>
         </section>
       </div>
@@ -356,375 +325,837 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
 </div>
 
 <script type="module">
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
-import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import {getFirestore,doc,getDoc,setDoc,updateDoc,collection,query,orderBy,limit,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-import {getFunctions,httpsCallable} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-functions.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
-const firebaseConfig={
-  apiKey:"AIzaSyCVfxa0DOThWiLc6PaL8nZGje6GB0n-C_g",
-  authDomain:"wasteless-7d8eb.firebaseapp.com",
-  projectId:"wasteless-7d8eb",
-  storageBucket:"wasteless-7d8eb.firebasestorage.app",
-  messagingSenderId:"547430030019",
-  appId:"1:547430030019:web:432cc749bc1e14e1fb2076"
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  collection,
+  query,
+  orderBy,
+  limit,
+  onSnapshot,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+import {
+  getFunctions,
+  httpsCallable
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-functions.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCVfxa0DOThWiLc6PaL8nZGje6GB0n-C_g",
+  authDomain: "wasteless-7d8eb.firebaseapp.com",
+  projectId: "wasteless-7d8eb",
+  storageBucket: "wasteless-7d8eb.firebasestorage.app",
+  messagingSenderId: "547430030019",
+  appId: "1:547430030019:web:432cc749bc1e14e1fb2076"
 };
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-const functions=getFunctions(app,"us-central1");
-const verifyRecycleQr=httpsCallable(functions,"verifyRecycleQr");
-const redeemReward=httpsCallable(functions,"redeemReward");
-const $=id=>document.getElementById(id);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const functions = getFunctions(app, "us-central1");
 
-const themeNames={light:"Light",dark:"Dark",forest:"Forest",ocean:"Ocean"};
-function applyTheme(theme,save=true){
-  if(!Object.prototype.hasOwnProperty.call(themeNames,theme)) theme="light";
-  document.body.dataset.theme=theme;
-  document.querySelectorAll("[data-theme-choice]").forEach(button=>{
-    button.setAttribute("aria-pressed",String(button.dataset.themeChoice===theme));
+// Reward redemption remains connected to your server function.
+const redeemReward = httpsCallable(functions, "redeemReward");
+
+const $ = id => document.getElementById(id);
+
+const themeNames = {
+  light: "Light",
+  dark: "Dark",
+  forest: "Forest",
+  ocean: "Ocean"
+};
+
+function applyTheme(theme, save = true) {
+  if (!Object.prototype.hasOwnProperty.call(themeNames, theme)) {
+    theme = "light";
+  }
+
+  document.body.dataset.theme = theme;
+
+  document.querySelectorAll("[data-theme-choice]").forEach(button => {
+    button.setAttribute(
+      "aria-pressed",
+      String(button.dataset.themeChoice === theme)
+    );
   });
-  $("themeStatus").textContent=`${themeNames[theme]} theme selected.`;
-  document.querySelector('meta[name="theme-color"]').content={
-    light:"#f7f8f6",dark:"#151a17",forest:"#edf4ed",ocean:"#f1f7fa"
+
+  $("themeStatus").textContent = `${themeNames[theme]} theme selected.`;
+
+  $("theme-color");
+  document.querySelector('meta[name="theme-color"]').content = {
+    light: "#f7f8f6",
+    dark: "#151a17",
+    forest: "#edf4ed",
+    ocean: "#f1f7fa"
   }[theme];
-  if(save){try{localStorage.setItem("wasteless-theme",theme);}catch(e){}}
+
+  if (save) {
+    try {
+      localStorage.setItem("wasteless-theme", theme);
+    } catch (e) {}
+  }
 }
-document.querySelectorAll("[data-theme-choice]").forEach(button=>{
-  button.addEventListener("click",()=>applyTheme(button.dataset.themeChoice));
+
+document.querySelectorAll("[data-theme-choice]").forEach(button => {
+  button.addEventListener("click", () => {
+    applyTheme(button.dataset.themeChoice);
+  });
 });
-let initialTheme="light";
-try{initialTheme=localStorage.getItem("wasteless-theme")||"light";}catch(e){}
-applyTheme(initialTheme,false);
 
-let user=null,userData=null,leaderRows=[],unsubscribe=null,stream=null,frame=null,scanBusy=false;
+let initialTheme = "light";
 
-const rewards=[
-{id:"reusable-bottle",name:"Reusable Bottle",desc:"A bottle for everyday hydration.",cost:300,icon:"bottle"},
-{id:"reusable-bag",name:"Reusable Tote Bag",desc:"Carry shopping without disposable bags.",cost:200,icon:"bag"},
-{id:"reusable-cup",name:"Reusable Cup",desc:"Bring your own cup for drinks.",cost:250,icon:"cup"},
-{id:"wireless-mouse",name:"Wireless Mouse",desc:"A practical computer accessory.",cost:1200,icon:"mouse"},
-{id:"mechanical-keyboard",name:"Mechanical Keyboard",desc:"An upgrade for your desk setup.",cost:3500,icon:"keyboard"},
-{id:"headphones",name:"Wireless Headphones",desc:"Listen to music and audio on the go.",cost:2800,icon:"headphones"},
-{id:"usb-cable",name:"USB-C Cable",desc:"A cable for compatible devices.",cost:500,icon:"cable"},
-{id:"lunchbox",name:"Reusable Lunchbox",desc:"Pack meals in a reusable container.",cost:700,icon:"lunchbox"},
-{id:"desk-lamp",name:"LED Desk Lamp",desc:"A useful addition to your study desk.",cost:1800,icon:"lamp"},
-{id:"plant-kit",name:"Mini Plant Kit",desc:"Grow a little greenery at home.",cost:600,icon:"plant"},
-{id:"notebook",name:"Recycled Notebook",desc:"A notebook made with recycled paper.",cost:350,icon:"notebook"},
-{id:"gift-voucher",name:"Eco Reward Voucher",desc:"A voucher from a participating shop.",cost:2000,icon:"voucher"}
+try {
+  initialTheme = localStorage.getItem("wasteless-theme") || "light";
+} catch (e) {}
+
+applyTheme(initialTheme, false);
+
+let user = null;
+let userData = null;
+let leaderRows = [];
+let unsubscribe = null;
+
+const rewards = [
+  {
+    id: "reusable-bottle",
+    name: "Reusable Bottle",
+    desc: "A bottle for everyday hydration.",
+    cost: 300,
+    icon: "bottle"
+  },
+  {
+    id: "reusable-bag",
+    name: "Reusable Tote Bag",
+    desc: "Carry shopping without disposable bags.",
+    cost: 200,
+    icon: "bag"
+  },
+  {
+    id: "reusable-cup",
+    name: "Reusable Cup",
+    desc: "Bring your own cup for drinks.",
+    cost: 250,
+    icon: "cup"
+  },
+  {
+    id: "wireless-mouse",
+    name: "Wireless Mouse",
+    desc: "A practical computer accessory.",
+    cost: 1200,
+    icon: "mouse"
+  },
+  {
+    id: "mechanical-keyboard",
+    name: "Mechanical Keyboard",
+    desc: "An upgrade for your desk setup.",
+    cost: 3500,
+    icon: "keyboard"
+  },
+  {
+    id: "headphones",
+    name: "Wireless Headphones",
+    desc: "Listen to music and audio on the go.",
+    cost: 2800,
+    icon: "headphones"
+  },
+  {
+    id: "usb-cable",
+    name: "USB-C Cable",
+    desc: "A cable for compatible devices.",
+    cost: 500,
+    icon: "cable"
+  },
+  {
+    id: "lunchbox",
+    name: "Reusable Lunchbox",
+    desc: "Pack meals in a reusable container.",
+    cost: 700,
+    icon: "lunchbox"
+  },
+  {
+    id: "desk-lamp",
+    name: "LED Desk Lamp",
+    desc: "A useful addition to your study desk.",
+    cost: 1800,
+    icon: "lamp"
+  },
+  {
+    id: "plant-kit",
+    name: "Mini Plant Kit",
+    desc: "Grow a little greenery at home.",
+    cost: 600,
+    icon: "plant"
+  },
+  {
+    id: "notebook",
+    name: "Recycled Notebook",
+    desc: "A notebook made with recycled paper.",
+    cost: 350,
+    icon: "notebook"
+  },
+  {
+    id: "gift-voucher",
+    name: "Eco Reward Voucher",
+    desc: "A voucher from a participating shop.",
+    cost: 2000,
+    icon: "voucher"
+  }
 ];
 
-const icons={
-  theme:'<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z"/>',
-  leaf:'<path d="M20 4c-9 0-15 4-15 11a5 5 0 0 0 5 5c7 0 11-7 10-16Z"/><path d="M4 21c3-6 7-9 12-12"/>',
-  dashboard:'<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/>',
-  scan:'<path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><rect x="7" y="7" width="4" height="4"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><path d="M14 14h3v3h-3zM19 14v2M14 19h2"/>',
-  rewards:'<path d="M20 12v9H4v-9M2 7h20v5H2zM12 7v14"/><path d="M12 7H7.5a2.5 2.5 0 1 1 2.5-2.5C10 6 12 7 12 7ZM12 7h4.5A2.5 2.5 0 1 0 14 4.5C14 6 12 7 12 7Z"/>',
-  leaderboard:'<path d="M4 19V9M10 19V4M16 19v-7M22 19H2"/>',
-  account:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
-  bottle:'<path d="M9 3h6v3l2 2v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8l2-2V3Z"/><path d="M9 6h6M7 12h10"/>',
-  bag:'<path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
-  cup:'<path d="M5 4h14l-2 16H7L5 4Z"/><path d="M7 9h10"/>',
-  mouse:'<rect x="5" y="2" width="14" height="20" rx="7"/><path d="M12 2v7"/>',
-  keyboard:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M5 9h.01M8 9h.01M11 9h.01M14 9h.01M17 9h.01M19 9h.01M5 12h.01M8 12h.01M11 12h.01M14 12h.01M17 12h.01M7 15h10"/>',
-  headphones:'<path d="M3 13v-2a9 9 0 0 1 18 0v2"/><rect x="3" y="12" width="5" height="8" rx="2"/><rect x="16" y="12" width="5" height="8" rx="2"/>',
-  cable:'<path d="M8 3v5a4 4 0 0 0 8 0V6M6 3h4M14 3h4v3h-4M12 12v3a4 4 0 0 0 4 4h2"/>',
-  lunchbox:'<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V5h8v3M3 12h18"/>',
-  lamp:'<path d="M9 20h6M12 16v4M7 3h10l3 9H4l3-9Z"/><path d="m9 12 3 4 3-4"/>',
-  plant:'<path d="M12 20v-9M12 14C4 14 4 7 4 7s8-1 8 7ZM12 11c0-7 8-7 8-7s0 7-8 7ZM6 21h12"/>',
-  notebook:'<rect x="5" y="3" width="15" height="18" rx="2"/><path d="M9 3v18M12 8h5M12 12h5M12 16h4M3 7h2M3 11h2M3 15h2"/>',
-  voucher:'<path d="M3 6h18v4a2 2 0 0 0 0 4v4H3v-4a2 2 0 0 0 0-4V6Z"/><path d="m13 8-4 8"/>'
+const icons = {
+  theme:
+    '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z"/>',
+
+  leaf:
+    '<path d="M20 4c-9 0-15 4-15 11a5 5 0 0 0 5 5c7 0 11-7 10-16Z"/><path d="M4 21c3-6 7-9 12-12"/>',
+
+  dashboard:
+    '<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/>',
+
+  rewards:
+    '<path d="M20 12v9H4v-9M2 7h20v5H2zM12 7v14"/><path d="M12 7H7.5a2.5 2.5 0 1 1 2.5-2.5C10 6 12 7 12 7ZM12 7h4.5A2.5 2.5 0 1 0 14 4.5C14 6 12 7 12 7Z"/>',
+
+  leaderboard:
+    '<path d="M4 19V9M10 19V4M16 19v-7M22 19H2"/>',
+
+  account:
+    '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+
+  bottle:
+    '<path d="M9 3h6v3l2 2v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8l2-2V3Z"/><path d="M9 6h6M7 12h10"/>',
+
+  bag:
+    '<path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+
+  cup:
+    '<path d="M5 4h14l-2 16H7L5 4Z"/><path d="M7 9h10"/>',
+
+  mouse:
+    '<rect x="5" y="2" width="14" height="20" rx="7"/><path d="M12 2v7"/>',
+
+  keyboard:
+    '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M5 9h.01M8 9h.01M11 9h.01M14 9h.01M17 9h.01M19 9h.01M5 12h.01M8 12h.01M11 12h.01M14 12h.01M17 12h.01M7 15h10"/>',
+
+  headphones:
+    '<path d="M3 13v-2a9 9 0 0 1 18 0v2"/><rect x="3" y="12" width="5" height="8" rx="2"/><rect x="16" y="12" width="5" height="8" rx="2"/>',
+
+  cable:
+    '<path d="M8 3v5a4 4 0 0 0 8 0V6M6 3h4M14 3h4v3h-4M12 12v3a4 4 0 0 0 4 4h2"/>',
+
+  lunchbox:
+    '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V5h8v3M3 12h18"/>',
+
+  lamp:
+    '<path d="M9 20h6M12 16v4M7 3h10l3 9H4l3-9Z"/><path d="m9 12 3 4 3-4"/>',
+
+  plant:
+    '<path d="M12 20v-9M12 14C4 14 4 7 4 7s8-1 8 7ZM12 11c0-7 8-7 8-7s0 7-8 7ZM6 21h12"/>',
+
+  notebook:
+    '<rect x="5" y="3" width="15" height="18" rx="2"/><path d="M9 3v18M12 8h5M12 12h5M12 16h4M3 7h2M3 11h2M3 15h2"/>',
+
+  voucher:
+    '<path d="M3 6h18v4a2 2 0 0 0 0 4v4H3v-4a2 2 0 0 0 0-4V6Z"/><path d="m13 8-4 8"/>'
 };
 
-function svg(type){
- return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[type]||icons.leaf}</svg>`;
-}
-function notice(id,msg,type="info"){
- const el=$(id);el.textContent=msg;el.className=`notice show ${type}`;
-}
-function clearNotice(id){$(id).textContent="";$(id).className="notice";}
-function fmt(n){return Number(n||0).toLocaleString();}
-function errorText(e){
- const known={
- "auth/email-already-in-use":"That email already has an account.",
- "auth/invalid-email":"Enter a valid email address.",
- "auth/weak-password":"Use a password with at least 6 characters.",
- "auth/invalid-credential":"Email or password is incorrect.",
- "permission-denied":"Permission denied. Check your Firestore security rules.",
- "functions/not-found":"The required Cloud Function has not been deployed.",
- "functions/unavailable":"The server function is unavailable."
- };
- return known[e?.code]||e?.message||"Something went wrong. Please try again.";
-}
-function validateName(value){
- const name=value.trim();
- if(name.length<1||name.length>30)throw Error("Display names must be 1–30 characters.");
- return name;
+function svg(type) {
+  return `
+    <svg viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.7"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true">
+      ${icons[type] || icons.leaf}
+    </svg>
+  `;
 }
 
-function setTab(name){
- document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));
- document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===`page-${name}`));
- const titles={
- dashboard:["A little less waste.<br>A better tomorrow.","Recycle, collect points, and make a difference."],
- scan:["Every scan counts.","Verify your recycling action at a participating bin."],
- rewards:["Good choices. Great rewards.","Use your verified points to redeem useful items."],
- leaderboard:["Progress, together.","See how the WasteLess community is doing."],
- account:["Your WasteLess account.","Manage your profile and track your contributions."]
- };
- $("heroTitle").innerHTML=titles[name][0];
- $("heroDescription").textContent=titles[name][1];
- if(name==="leaderboard")renderLeaderboard();
- if(name==="account"&&!user)$("email").focus();
- window.scrollTo({top:0,behavior:"smooth"});
-}
-document.querySelectorAll(".tab").forEach(b=>{
- const labels={dashboard:["dashboard","Home"],scan:["scan","Scan"],rewards:["rewards","Rewards"],leaderboard:["leaderboard","Leaderboard"],account:["account","Account"]};
- const [ico,label]=labels[b.dataset.tab];
- b.innerHTML=svg(ico)+`<span>${label}</span>`;
- b.addEventListener("click",()=>setTab(b.dataset.tab));
-});
-document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.go)));
-$("brandIcon").innerHTML=svg("leaf");
-$("heroIcon").innerHTML=svg("leaf");
-$("dashboardIcon").innerHTML=svg("dashboard");
-$("quickScanIcon").innerHTML=svg("scan");
-$("quickRewardIcon").innerHTML=svg("rewards");
-$("quickLeaderIcon").innerHTML=svg("leaderboard");
-$("scanIcon").innerHTML=svg("scan");
-$("scanSymbol").innerHTML=svg("scan");
-$("rewardIcon").innerHTML=svg("rewards");
-$("leaderIcon").innerHTML=svg("leaderboard");
-$("accountIcon").innerHTML=svg("account");
-$("themeIcon").innerHTML=svg("theme");
-
-function renderRewards(){
- const root=$("rewards");root.replaceChildren();
- for(const r of rewards){
-  const card=document.createElement("article");card.className="reward";
-  const art=document.createElement("div");art.className="reward-art";art.innerHTML=svg(r.icon);
-  const title=document.createElement("h3");title.textContent=r.name;
-  const desc=document.createElement("p");desc.className="reward-desc";desc.textContent=r.desc;
-  const cost=document.createElement("div");cost.className="reward-cost";cost.textContent=fmt(r.cost)+" points";
-  const btn=document.createElement("button");btn.className="btn secondary";btn.type="button";btn.textContent="Redeem";
-  btn.addEventListener("click",()=>redeem(r,btn));
-  card.append(art,title,desc,cost,btn);root.append(card);
- }
- $("rewardCount").textContent=rewards.length;
- const r=rewards.find(x=>x.id==="wireless-mouse");
- const art=document.createElement("div");art.className="reward-art";art.style.height="70px";art.innerHTML=svg(r.icon);
- const title=document.createElement("strong");title.style.fontSize="13px";title.textContent=r.name;
- const desc=document.createElement("p");desc.className="sub";desc.textContent=fmt(r.cost)+" points";
- $("featuredReward").replaceChildren(art,title,desc);
-}
-async function redeem(r,btn){
- clearNotice("rewardNotice");
- if(!user){notice("rewardNotice","Sign in before redeeming a reward.");setTab("account");return;}
- if(!confirm(`Redeem ${r.name} for ${fmt(r.cost)} points?`))return;
- btn.disabled=true;btn.textContent="Processing…";
- try{
-  // The server must determine the reward's real price and check stock.
-  const result=await redeemReward({rewardId:r.id});
-  notice("rewardNotice",result?.data?.message||"Redemption request submitted.","success");
-  await refreshProfile();
- }catch(e){notice("rewardNotice","Redemption failed: "+errorText(e),"error");}
- finally{btn.disabled=false;btn.textContent="Redeem";}
-}
-function renderStats(){
- const points=user?fmt(userData?.points):"—",visits=user?fmt(userData?.visits):"—";
- $("pointsValue").textContent=points;$("visitsValue").textContent=visits;
- $("rewardBalance").textContent=points;
- $("accountPoints").textContent=points;$("accountVisits").textContent=visits;
- const idx=user?leaderRows.findIndex(x=>x.id===user.uid):-1;
- const rank=idx<0?"—":"#"+(idx+1);
- $("rankValue").textContent=rank;$("accountRank").textContent=rank;
- $("progressSummary").textContent=user
-  ?`${fmt(userData?.visits)} verified actions completed. You have ${points} points available.`
-  :"Sign in to view your progress.";
-}
-function renderLeaderboard(){
- const root=$("leaderboard");root.replaceChildren();
- if(!user){const p=document.createElement("div");p.className="empty";p.textContent="Sign in to view the community leaderboard.";root.append(p);return;}
- if(!leaderRows.length){const p=document.createElement("div");p.className="empty";p.textContent="No leaderboard entries yet.";root.append(p);return;}
- leaderRows.forEach((m,i)=>{
-  const row=document.createElement("div");row.className="leader-row";
-  const rank=document.createElement("div");rank.className="rank";rank.textContent="#"+(i+1);
-  const avatar=document.createElement("div");avatar.className="avatar";avatar.textContent=(m.displayName||"W").trim().charAt(0).toUpperCase();
-  const info=document.createElement("div");info.className="leader-info";
-  const name=document.createElement("div");name.className="leader-name";
-  name.textContent=(m.displayName||"WasteLess Member")+(m.id===user.uid?" (You)":"");
-  const meta=document.createElement("div");meta.className="leader-meta";meta.textContent=fmt(m.visits)+" verified actions";
-  const points=document.createElement("div");points.className="leader-points";points.textContent=fmt(m.points)+" pts";
-  info.append(name,meta);row.append(rank,avatar,info,points);root.append(row);
- });
+function notice(id, message, type = "info") {
+  const el = $(id);
+  el.textContent = message;
+  el.className = `notice show ${type}`;
 }
 
-/* UPDATED: automatically saves email for new users and backfills it for existing users. */
-async function ensureUserDoc(u,name){
- const ref=doc(db,"users",u.uid);
- const snap=await getDoc(ref);
- const email=(u.email||"").trim();
+function clearNotice(id) {
+  $(id).textContent = "";
+  $(id).className = "notice";
+}
 
- if(!snap.exists()){
-  const n=validateName(name||u.displayName||"WasteLess Member");
-  const newUserData={
-   displayName:n,
-   email:email,
-   points:0,
-   visits:0,
-   createdAt:serverTimestamp()
+function fmt(value) {
+  return Number(value || 0).toLocaleString();
+}
+
+function errorText(error) {
+  const known = {
+    "auth/email-already-in-use":
+      "That email already has an account.",
+    "auth/invalid-email":
+      "Enter a valid email address.",
+    "auth/weak-password":
+      "Use a password with at least 6 characters.",
+    "auth/invalid-credential":
+      "Email or password is incorrect.",
+    "permission-denied":
+      "Permission denied. Check your Firestore security rules.",
+    "functions/not-found":
+      "The required Cloud Function has not been deployed.",
+    "functions/unavailable":
+      "The server function is unavailable."
   };
-  await setDoc(ref,newUserData);
-  return {displayName:n,email:email,points:0,visits:0};
- }
 
- const d=snap.data();
-
- // Add or refresh the email field on existing member documents.
- if(email&&d.email!==email){
-  await updateDoc(ref,{email:email});
- }
-
- return {
-  displayName:d.displayName||u.displayName||"WasteLess Member",
-  email:email||d.email||"",
-  points:Number(d.points||0),
-  visits:Number(d.visits||0)
- };
+  return known[error?.code] ||
+    error?.message ||
+    "Something went wrong. Please try again.";
 }
 
-async function refreshProfile(){
- if(!user)return;
- userData=await ensureUserDoc(user);
- $("accountName").textContent=userData.displayName;
- $("accountEmail").textContent=user.email||"";
- $("newDisplayName").value=userData.displayName;
- renderStats();
-}
-function startLeaderboard(){
- if(unsubscribe){unsubscribe();unsubscribe=null;}
- leaderRows=[];renderLeaderboard();
- if(!user)return;
- unsubscribe=onSnapshot(query(collection(db,"users"),orderBy("points","desc"),limit(50)),snap=>{
-  leaderRows=snap.docs.map(d=>({id:d.id,...d.data()}));
-  renderLeaderboard();renderStats();clearNotice("leaderNotice");
- },e=>notice("leaderNotice","Leaderboard error: "+errorText(e),"error"));
+function validateName(value) {
+  const name = String(value || "").trim();
+
+  if (name.length < 1 || name.length > 30) {
+    throw Error("Display names must be 1–30 characters.");
+  }
+
+  return name;
 }
 
-$("authForm").addEventListener("submit",async e=>{
- e.preventDefault();clearNotice("authNotice");
- $("signInBtn").disabled=true;$("signUpBtn").disabled=true;
- try{
-  await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
-  notice("authNotice","Signed in successfully.","success");
- }catch(err){notice("authNotice",errorText(err),"error");}
- finally{$("signInBtn").disabled=false;$("signUpBtn").disabled=false;}
-});
-$("signUpBtn").addEventListener("click",async()=>{
- clearNotice("authNotice");
- let name;
- try{name=validateName($("displayName").value);}
- catch(e){notice("authNotice",e.message,"error");return;}
- if(!$("email").value.trim()||!$("password").value){
-  notice("authNotice","Enter an email and password first.","error");return;
- }
- $("signInBtn").disabled=true;$("signUpBtn").disabled=true;
- try{
-  const cred=await createUserWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
-  await updateProfile(cred.user,{displayName:name});
-  await ensureUserDoc(cred.user,name);
-  notice("authNotice","Account created successfully.","success");
- }catch(e){notice("authNotice",errorText(e),"error");}
- finally{$("signInBtn").disabled=false;$("signUpBtn").disabled=false;}
-});
-$("profileForm").addEventListener("submit",async e=>{
- e.preventDefault();clearNotice("profileNotice");if(!user)return;
- let name;try{name=validateName($("newDisplayName").value);}
- catch(err){notice("profileNotice",err.message,"error");return;}
- try{
-  await updateDoc(doc(db,"users",user.uid),{displayName:name});
-  await updateProfile(user,{displayName:name});
-  userData={...userData,displayName:name};
-  $("accountName").textContent=name;
-  notice("profileNotice","Display name updated.","success");
- }catch(err){notice("profileNotice",errorText(err),"error");}
-});
-$("signOutBtn").addEventListener("click",async()=>{
- await stopScanner();try{await signOut(auth);}catch(e){notice("profileNotice",errorText(e),"error");}
-});
-$("headerAccount").addEventListener("click",()=>setTab("account"));
+function setTab(name) {
+  document.querySelectorAll(".tab").forEach(button => {
+    button.classList.toggle("active", button.dataset.tab === name);
+  });
 
-async function startScanner(){
- clearNotice("scanNotice");
- if(!user){notice("scanNotice","Sign in before scanning a QR code.");setTab("account");return;}
- if(!navigator.mediaDevices?.getUserMedia){notice("scanNotice","Camera requires HTTPS or localhost in a supported browser.","error");return;}
- if(!("BarcodeDetector" in window)){notice("scanNotice","Built-in QR detection is not supported by this browser. Try an updated Chrome browser.","error");return;}
- try{
-  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});
-  const video=$("cameraVideo");video.srcObject=stream;video.classList.remove("hidden");
-  $("startScan").classList.add("hidden");$("stopScan").classList.remove("hidden");
-  await video.play();
-  const detector=new BarcodeDetector({formats:["qr_code"]});scanBusy=false;
-  const scan=async()=>{
-   if(!stream||scanBusy)return;
-   try{
-    if(video.readyState>=2){
-     const codes=await detector.detect(video);
-     if(codes.length&&codes[0].rawValue){
-      scanBusy=true;await stopScanner();await submitQr(codes[0].rawValue);return;
-     }
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.toggle("active", page.id === `page-${name}`);
+  });
+
+  const titles = {
+    dashboard: [
+      "A little less waste.<br>A better tomorrow.",
+      "Collect points, redeem rewards, and make a difference."
+    ],
+    rewards: [
+      "Good choices. Great rewards.",
+      "Use your available points to redeem useful items."
+    ],
+    leaderboard: [
+      "Progress, together.",
+      "See how the WasteLess community is doing."
+    ],
+    account: [
+      "Your WasteLess account.",
+      "Manage your profile and track your contributions."
+    ]
+  };
+
+  $("heroTitle").innerHTML = titles[name][0];
+  $("heroDescription").textContent = titles[name][1];
+
+  if (name === "leaderboard") {
+    renderLeaderboard();
+  }
+
+  if (name === "account" && !user) {
+    $("email").focus();
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+const tabLabels = {
+  dashboard: ["dashboard", "Home"],
+  rewards: ["rewards", "Rewards"],
+  leaderboard: ["leaderboard", "Leaderboard"],
+  account: ["account", "Account"]
+};
+
+document.querySelectorAll(".tab").forEach(button => {
+  const [icon, label] = tabLabels[button.dataset.tab];
+
+  button.innerHTML = svg(icon) + `<span>${label}</span>`;
+  button.addEventListener("click", () => setTab(button.dataset.tab));
+});
+
+document.querySelectorAll("[data-go]").forEach(button => {
+  button.addEventListener("click", () => setTab(button.dataset.go));
+});
+
+$("brandIcon").innerHTML = svg("leaf");
+$("heroIcon").innerHTML = svg("leaf");
+$("dashboardIcon").innerHTML = svg("dashboard");
+$("quickRewardIcon").innerHTML = svg("rewards");
+$("quickLeaderIcon").innerHTML = svg("leaderboard");
+$("rewardIcon").innerHTML = svg("rewards");
+$("leaderIcon").innerHTML = svg("leaderboard");
+$("accountIcon").innerHTML = svg("account");
+$("themeIcon").innerHTML = svg("theme");
+
+function renderRewards() {
+  const root = $("rewards");
+  root.replaceChildren();
+
+  for (const reward of rewards) {
+    const card = document.createElement("article");
+    card.className = "reward";
+
+    const art = document.createElement("div");
+    art.className = "reward-art";
+    art.innerHTML = svg(reward.icon);
+
+    const title = document.createElement("h3");
+    title.textContent = reward.name;
+
+    const desc = document.createElement("p");
+    desc.className = "reward-desc";
+    desc.textContent = reward.desc;
+
+    const cost = document.createElement("div");
+    cost.className = "reward-cost";
+    cost.textContent = fmt(reward.cost) + " points";
+
+    const button = document.createElement("button");
+    button.className = "btn secondary";
+    button.type = "button";
+    button.textContent = "Redeem";
+    button.addEventListener("click", () => redeem(reward, button));
+
+    card.append(art, title, desc, cost, button);
+    root.append(card);
+  }
+
+  $("rewardCount").textContent = rewards.length;
+
+  const featured = rewards.find(item => item.id === "wireless-mouse");
+
+  const art = document.createElement("div");
+  art.className = "reward-art";
+  art.style.height = "70px";
+  art.innerHTML = svg(featured.icon);
+
+  const title = document.createElement("strong");
+  title.style.fontSize = "13px";
+  title.textContent = featured.name;
+
+  const desc = document.createElement("p");
+  desc.className = "sub";
+  desc.textContent = fmt(featured.cost) + " points";
+
+  $("featuredReward").replaceChildren(art, title, desc);
+}
+
+async function redeem(reward, button) {
+  clearNotice("rewardNotice");
+
+  if (!user) {
+    notice("rewardNotice", "Sign in before redeeming a reward.");
+    setTab("account");
+    return;
+  }
+
+  if (!confirm(
+    `Redeem ${reward.name} for ${fmt(reward.cost)} points?`
+  )) {
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Processing…";
+
+  try {
+    // The server must check the actual price, balance and stock.
+    const result = await redeemReward({
+      rewardId: reward.id
+    });
+
+    notice(
+      "rewardNotice",
+      result?.data?.message || "Redemption request submitted.",
+      "success"
+    );
+
+    await refreshProfile();
+  } catch (error) {
+    notice(
+      "rewardNotice",
+      "Redemption failed: " + errorText(error),
+      "error"
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent = "Redeem";
+  }
+}
+
+function renderStats() {
+  const points = user ? fmt(userData?.points) : "—";
+  const visits = user ? fmt(userData?.visits) : "—";
+
+  $("pointsValue").textContent = points;
+  $("visitsValue").textContent = visits;
+  $("rewardBalance").textContent = points;
+  $("accountPoints").textContent = points;
+  $("accountVisits").textContent = visits;
+
+  const index = user
+    ? leaderRows.findIndex(row => row.id === user.uid)
+    : -1;
+
+  const rank = index < 0 ? "—" : "#" + (index + 1);
+
+  $("rankValue").textContent = rank;
+  $("accountRank").textContent = rank;
+
+  $("progressSummary").textContent = user
+    ? `${fmt(userData?.visits)} verified actions completed. You have ${points} points available.`
+    : "Sign in to view your progress.";
+}
+
+function renderLeaderboard() {
+  const root = $("leaderboard");
+  root.replaceChildren();
+
+  if (!user) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "Sign in to view the community leaderboard.";
+    root.append(empty);
+    return;
+  }
+
+  if (!leaderRows.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "No leaderboard entries yet.";
+    root.append(empty);
+    return;
+  }
+
+  leaderRows.forEach((member, index) => {
+    const row = document.createElement("div");
+    row.className = "leader-row";
+
+    const rank = document.createElement("div");
+    rank.className = "rank";
+    rank.textContent = "#" + (index + 1);
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = (member.displayName || "W")
+      .trim()
+      .charAt(0)
+      .toUpperCase();
+
+    const info = document.createElement("div");
+    info.className = "leader-info";
+
+    const name = document.createElement("div");
+    name.className = "leader-name";
+    name.textContent =
+      (member.displayName || "WasteLess Member") +
+      (member.id === user.uid ? " (You)" : "");
+
+    const meta = document.createElement("div");
+    meta.className = "leader-meta";
+    meta.textContent = fmt(member.visits) + " verified actions";
+
+    const points = document.createElement("div");
+    points.className = "leader-points";
+    points.textContent = fmt(member.points) + " pts";
+
+    info.append(name, meta);
+    row.append(rank, avatar, info, points);
+    root.append(row);
+  });
+}
+
+// Creates a new member document with an email field.
+// Also attempts to backfill the email field on existing documents.
+async function ensureUserDoc(currentUser, name) {
+  const ref = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(ref);
+  const email = (currentUser.email || "").trim();
+
+  if (!snap.exists()) {
+    const displayName = validateName(
+      name || currentUser.displayName || "WasteLess Member"
+    );
+
+    const newUserData = {
+      displayName,
+      email,
+      points: 0,
+      visits: 0,
+      createdAt: serverTimestamp()
+    };
+
+    await setDoc(ref, newUserData);
+
+    return {
+      displayName,
+      email,
+      points: 0,
+      visits: 0
+    };
+  }
+
+  const data = snap.data();
+
+  if (email && data.email !== email) {
+    try {
+      await updateDoc(ref, { email });
+    } catch (error) {
+      // The app can still load if the current Firestore rules
+      // do not permit email backfilling.
+      console.warn("Could not update member email field:", error);
     }
-   }catch(e){console.warn("QR detection error",e);}
-   if(stream)frame=requestAnimationFrame(scan);
-  };
-  frame=requestAnimationFrame(scan);
-  notice("scanNotice","Camera active. Point it at an official WasteLess QR code.");
- }catch(e){
-  await stopScanner();notice("scanNotice","Could not open camera: "+(e.message||"permission denied"),"error");
- }
-}
-async function stopScanner(){
- if(frame!==null){cancelAnimationFrame(frame);frame=null;}
- if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
- const video=$("cameraVideo");video.pause();video.srcObject=null;video.classList.add("hidden");
- $("stopScan").classList.add("hidden");$("startScan").classList.remove("hidden");
-}
-async function submitQr(qrPayload){
- if(!user){notice("scanNotice","Sign in before verifying a QR code.","error");return;}
- notice("scanNotice","Verifying QR code with the server…");
- $("startScan").disabled=true;
- try{
-  const result=await verifyRecycleQr({qrPayload});
-  notice("scanNotice",result?.data?.message||"Recycling action verified.","success");
-  await refreshProfile();
- }catch(e){notice("scanNotice","Verification failed: "+errorText(e),"error");}
- finally{$("startScan").disabled=false;}
-}
-$("startScan").addEventListener("click",startScanner);
-$("stopScan").addEventListener("click",stopScanner);
-window.addEventListener("pagehide",()=>{if(frame!==null)cancelAnimationFrame(frame);if(stream)stream.getTracks().forEach(t=>t.stop());});
+  }
 
-onAuthStateChanged(auth,async u=>{
- user=u;
- $("signedOut").classList.toggle("hidden",!!u);
- $("signedIn").classList.toggle("hidden",!u);
- $("headerAccount").textContent=u?"My account":"Sign in";
- if(u){
-  $("statusDot").classList.add("online");$("statusText").textContent="Signed in";
-  try{await refreshProfile();startLeaderboard();$("welcomeText").textContent="Welcome back, "+(userData.displayName||"member")+". Keep up your recycling progress.";}
-  catch(e){notice("profileNotice",errorText(e),"error");}
- }else{
-  userData=null;leaderRows=[];
-  $("statusDot").classList.remove("online");$("statusText").textContent="Not signed in";
-  if(unsubscribe){unsubscribe();unsubscribe=null;}
-  renderStats();renderLeaderboard();
-  $("welcomeText").textContent="Sign in to track your points, verify recycling actions and redeem rewards.";
- }
+  return {
+    displayName:
+      data.displayName ||
+      currentUser.displayName ||
+      "WasteLess Member",
+    email: email || data.email || "",
+    points: Number(data.points || 0),
+    visits: Number(data.visits || 0)
+  };
+}
+
+async function refreshProfile() {
+  if (!user) return;
+
+  userData = await ensureUserDoc(user);
+
+  $("accountName").textContent = userData.displayName;
+  $("accountEmail").textContent = user.email || "";
+  $("newDisplayName").value = userData.displayName;
+
+  renderStats();
+}
+
+function startLeaderboard() {
+  if (unsubscribe) {
+    unsubscribe();
+    unsubscribe = null;
+  }
+
+  leaderRows = [];
+  renderLeaderboard();
+  renderStats();
+
+  if (!user) return;
+
+  const leaderboardQuery = query(
+    collection(db, "users"),
+    orderBy("points", "desc"),
+    limit(50)
+  );
+
+  unsubscribe = onSnapshot(
+    leaderboardQuery,
+    snapshot => {
+      leaderRows = snapshot.docs.map(document => ({
+        id: document.id,
+        ...document.data()
+      }));
+
+      renderLeaderboard();
+      renderStats();
+      clearNotice("leaderNotice");
+    },
+    error => {
+      notice(
+        "leaderNotice",
+        "Leaderboard error: " + errorText(error),
+        "error"
+      );
+    }
+  );
+}
+
+$("authForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  clearNotice("authNotice");
+
+  $("signInBtn").disabled = true;
+  $("signUpBtn").disabled = true;
+
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      $("email").value.trim(),
+      $("password").value
+    );
+
+    notice("authNotice", "Signed in successfully.", "success");
+  } catch (error) {
+    notice("authNotice", errorText(error), "error");
+  } finally {
+    $("signInBtn").disabled = false;
+    $("signUpBtn").disabled = false;
+  }
 });
-window.addEventListener("online",()=>{$("statusText").textContent=user?"Signed in":"Online";});
-window.addEventListener("offline",()=>{$("statusText").textContent="Offline";$("statusDot").classList.remove("online");});
+
+$("signUpBtn").addEventListener("click", async () => {
+  clearNotice("authNotice");
+
+  let name;
+
+  try {
+    name = validateName($("displayName").value);
+  } catch (error) {
+    notice("authNotice", error.message, "error");
+    return;
+  }
+
+  if (!$("email").value.trim() || !$("password").value) {
+    notice("authNotice", "Enter an email and password first.", "error");
+    return;
+  }
+
+  $("signInBtn").disabled = true;
+  $("signUpBtn").disabled = true;
+
+  try {
+    const credential = await createUserWithEmailAndPassword(
+      auth,
+      $("email").value.trim(),
+      $("password").value
+    );
+
+    await updateProfile(credential.user, {
+      displayName: name
+    });
+
+    await ensureUserDoc(credential.user, name);
+
+    notice("authNotice", "Account created successfully.", "success");
+  } catch (error) {
+    notice("authNotice", errorText(error), "error");
+  } finally {
+    $("signInBtn").disabled = false;
+    $("signUpBtn").disabled = false;
+  }
+});
+
+$("profileForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  clearNotice("profileNotice");
+
+  if (!user) return;
+
+  let name;
+
+  try {
+    name = validateName($("newDisplayName").value);
+  } catch (error) {
+    notice("profileNotice", error.message, "error");
+    return;
+  }
+
+  try {
+    await updateDoc(doc(db, "users", user.uid), {
+      displayName: name
+    });
+
+    await updateProfile(user, {
+      displayName: name
+    });
+
+    userData = {
+      ...userData,
+      displayName: name
+    };
+
+    $("accountName").textContent = name;
+
+    notice("profileNotice", "Display name updated.", "success");
+  } catch (error) {
+    notice("profileNotice", errorText(error), "error");
+  }
+});
+
+$("signOutBtn").addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    notice("profileNotice", errorText(error), "error");
+  }
+});
+
+$("headerAccount").addEventListener("click", () => {
+  setTab("account");
+});
+
+onAuthStateChanged(auth, async currentUser => {
+  user = currentUser;
+
+  $("signedOut").classList.toggle("hidden", !!currentUser);
+  $("signedIn").classList.toggle("hidden", !currentUser);
+  $("headerAccount").textContent = currentUser ? "My account" : "Sign in";
+
+  if (currentUser) {
+    $("statusDot").classList.add("online");
+    $("statusText").textContent = "Signed in";
+
+    try {
+      await refreshProfile();
+      startLeaderboard();
+
+      $("welcomeText").textContent =
+        "Welcome back, " +
+        (userData.displayName || "member") +
+        ". Keep up your sustainability progress.";
+    } catch (error) {
+      notice("profileNotice", errorText(error), "error");
+    }
+  } else {
+    userData = null;
+    leaderRows = [];
+
+    if (unsubscribe) {
+      unsubscribe();
+      unsubscribe = null;
+    }
+
+    $("statusDot").classList.remove("online");
+    $("statusText").textContent = "Not signed in";
+
+    renderStats();
+    renderLeaderboard();
+
+    $("welcomeText").textContent =
+      "Sign in to track your points and redeem rewards.";
+  }
+});
+
+window.addEventListener("online", () => {
+  $("statusText").textContent = user ? "Signed in" : "Online";
+  if (user) $("statusDot").classList.add("online");
+});
+
+window.addEventListener("offline", () => {
+  $("statusText").textContent = "Offline";
+  $("statusDot").classList.remove("online");
+});
 
 renderRewards();
 renderStats();
