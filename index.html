@@ -327,8 +327,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import {getFirestore,doc,getDoc,setDoc,updateDoc,collection,query,orderBy,limit,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-import {getFunctions,httpsCallable} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-functions.js";
+import {getFirestore,doc,getDoc,setDoc,updateDoc,collection,query,orderBy,limit,onSnapshot,serverTimestamp,runTransaction} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 const firebaseConfig={
   apiKey:"AIzaSyCVfxa0DOThWiLc6PaL8nZGje6GB0n-C_g",
@@ -342,8 +341,6 @@ const firebaseConfig={
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
-const functions=getFunctions(app,"us-central1");
-const redeemReward=httpsCallable(functions,"redeemReward");
 const $=id=>document.getElementById(id);
 
 const themeNames={light:"Light",dark:"Dark",forest:"Forest",ocean:"Ocean"};
@@ -487,12 +484,34 @@ async function redeem(r,btn){
  if(!confirm(`Redeem ${r.name} for ${fmt(r.cost)} points?`))return;
  btn.disabled=true;btn.textContent="Processing…";
  try{
-  // The server must determine the reward's real price and check stock.
-  const result=await redeemReward({rewardId:r.id});
-  notice("rewardNotice",result?.data?.message||"Redemption request submitted.","success");
+  const userRef=doc(db,"users",user.uid);
+  const redemptionRef=doc(collection(db,"redemptions"));
+  await runTransaction(db,async transaction=>{
+   const userSnap=await transaction.get(userRef);
+   if(!userSnap.exists())throw new Error("Your member account could not be found.");
+   const data=userSnap.data();
+   const currentPoints=Number(data.points||0);
+   if(!Number.isFinite(currentPoints)||currentPoints<0)throw new Error("Your points balance is invalid.");
+   if(currentPoints<r.cost)throw new Error(`Not enough points. You need ${fmt(r.cost)} points, but have ${fmt(currentPoints)}.`);
+   transaction.update(userRef,{points:currentPoints-r.cost});
+   transaction.set(redemptionRef,{
+    userId:user.uid,
+    userEmail:user.email||"",
+    rewardId:r.id,
+    rewardName:r.name,
+    pointsSpent:r.cost,
+    status:"pending",
+    createdAt:serverTimestamp()
+   });
+  });
   await refreshProfile();
- }catch(e){notice("rewardNotice","Redemption failed: "+errorText(e),"error");}
- finally{btn.disabled=false;btn.textContent="Redeem";}
+  notice("rewardNotice",`Redemption recorded! ${r.name} cost ${fmt(r.cost)} points. Your remaining balance is ${fmt(userData.points)} points. The reward is pending fulfilment.`,"success");
+ }catch(e){
+  console.error("WasteLess redemption error:",e);
+  const message=errorText(e);
+  notice("rewardNotice","Redemption failed: "+message,"error");
+  alert("Redemption Failed\n\n"+message);
+ }finally{btn.disabled=false;btn.textContent="Redeem";}
 }
 function renderStats(){
  const points=user?fmt(userData?.points):"—",visits=user?fmt(userData?.visits):"—";
