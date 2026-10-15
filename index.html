@@ -99,7 +99,8 @@ h2{font-size:16px;letter-spacing:-.3px;margin:0}
 .notice{display:none;margin-top:13px;padding:12px 13px;border-radius:10px;
   font-size:12px;line-height:1.6;overflow-wrap:anywhere}
 .notice.show{display:block}
-.notice.info,.notice.success{background:var(--light);color:var(--text)}
+.notice.info{background:var(--light);color:var(--text)}
+.notice.success{background:var(--light);color:var(--text)}
 .notice.error{background:#fff0ef;color:#923d37}
 .reward-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
 .reward{min-width:0;border:1px solid var(--line);border-radius:14px;background:var(--surface);
@@ -112,6 +113,23 @@ h2{font-size:16px;letter-spacing:-.3px;margin:0}
 .reward-desc{font-size:11px;color:var(--muted);line-height:1.5;margin:0 0 12px;flex:1}
 .reward-cost{font-size:12px;font-weight:750;margin-bottom:10px}
 .reward .btn{width:100%;padding:9px 5px;font-size:11px}
+.cart-panel{border:1px solid var(--line);border-radius:14px;background:var(--soft);padding:16px;margin:0 0 18px}
+.cart-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.cart-head h3{font-size:14px;margin:0}
+.cart-count{font-size:11px;color:var(--muted)}
+.cart-item{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.cart-item:last-child{border-bottom:0}
+.cart-item-name{font-size:12px;font-weight:700}
+.cart-item-meta{font-size:10px;color:var(--muted);margin-top:4px}
+.qty-controls{display:flex;align-items:center;gap:7px}
+.qty-btn{width:28px;height:28px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text);font-weight:800}
+.qty-number{font-size:12px;min-width:14px;text-align:center;font-weight:700}
+.cart-line-total{font-size:11px;font-weight:750;white-space:nowrap}
+.cart-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:13px;margin-top:10px}
+.cart-total-label{font-size:11px;color:var(--muted)}
+.cart-total-value{font-size:19px;font-weight:800;margin-top:4px}
+.cart-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.cart-actions .btn{flex:1}
 .leader-row{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}
 .leader-row:last-child{border-bottom:0}
 .rank{width:25px;text-align:center;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0}
@@ -195,7 +213,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
     <div>
       <div class="eyebrow">Small actions. Real impact.</div>
       <h1 id="heroTitle">A little less waste.<br>A better tomorrow.</h1>
-      <p id="heroDescription">Collect points, redeem rewards, and help build a more sustainable community.</p>
+      <p id="heroDescription">Collect points and redeem rewards. Every sustainable action helps build a more responsible community.</p>
     </div>
     <div class="hero-art" id="heroIcon"></div>
   </section>
@@ -217,9 +235,8 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
     <div class="grid">
       <div class="stack">
         <section class="panel">
-          <div class="panel-head"><div><h2>Welcome to WasteLess</h2><p class="sub">Your sustainability journey starts here.</p></div><span class="section-icon" id="dashboardIcon"></span></div>
+          <div class="panel-head"><div><h2>Welcome to WasteLess</h2><p class="sub">Your recycling journey starts here.</p></div><span class="section-icon" id="dashboardIcon"></span></div>
           <p class="sub" id="welcomeText">Sign in to track your points and redeem rewards.</p>
-          <div style="margin-top:18px"><button class="btn" data-go="rewards" type="button">Explore rewards</button></div>
         </section>
         <section class="panel">
           <div class="panel-head"><div><h2>Quick access</h2><p class="sub">Everything you need, one tap away.</p></div></div>
@@ -231,7 +248,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
       </div>
       <div class="stack">
         <section class="panel">
-          <div class="panel-head"><div><h2>Your progress</h2><p class="sub">Your contributions add up.</p></div></div>
+          <div class="panel-head"><div><h2>Your progress</h2><p class="sub">Your verified contributions add up.</p></div></div>
           <div id="progressSummary" class="empty">Sign in to view your progress.</div>
           <button class="btn secondary" data-go="account" type="button" style="margin-top:12px">View account</button>
         </section>
@@ -246,15 +263,24 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
 
   <section class="page" id="page-rewards">
     <section class="panel">
-      <div class="panel-head"><div><h2>Reward catalogue</h2><p class="sub">Redeem your points for useful items.</p></div><span class="section-icon" id="rewardIcon"></span></div>
+      <div class="panel-head"><div><h2>Reward catalogue</h2><p class="sub">Redeem your verified points for useful items.</p></div><span class="section-icon" id="rewardIcon"></span></div>
       <div class="stats" style="margin-bottom:18px">
         <article class="stat"><div class="stat-label">Your balance</div><div class="stat-value" id="rewardBalance">—</div><div class="stat-foot">Points available</div></article>
         <article class="stat"><div class="stat-label">Available items</div><div class="stat-value" id="rewardCount">12</div><div class="stat-foot">Catalogue examples</div></article>
         <article class="stat"><div class="stat-label">Starting from</div><div class="stat-value">200</div><div class="stat-foot">Points per reward</div></article>
       </div>
+      <section class="cart-panel" aria-labelledby="cartTitle">
+        <div class="cart-head"><h3 id="cartTitle">Your shopping cart</h3><span class="cart-count" id="cartCount">0 items</span></div>
+        <div id="cartItems"><div class="empty">Your cart is empty. Add rewards below to get started.</div></div>
+        <div class="cart-summary">
+          <div><div class="cart-total-label">Checkout total · points only</div><div class="cart-total-value" id="cartTotal">0 points</div></div>
+          <div class="cart-actions"><button class="btn secondary" id="clearCartBtn" type="button">Clear cart</button><button class="btn" id="checkoutBtn" type="button">Checkout</button></div>
+        </div>
+        <p class="note" style="margin-bottom:0">No money or card details are needed. Checkout deducts points from your WasteLess balance.</p>
+      </section>
       <div id="rewards" class="reward-grid"></div>
       <div id="rewardNotice" class="notice" role="status" aria-live="polite"></div>
-      <p class="note">Prices and inventory must be configured on the server. Catalogue items are examples and are not a guarantee of stock or fulfilment.</p>
+      <p class="note">Reward catalogue prices are point costs for this demo. Items are examples and are not a guarantee of stock or fulfilment.</p>
     </section>
   </section>
 
@@ -313,8 +339,8 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
         </section>
         <section class="panel">
           <h2>About WasteLess</h2>
-          <p class="sub">WasteLess encourages sustainable habits by rewarding verified contributions. Collect points and redeem available rewards.</p>
-          <p class="note">This version uses Firestore transactions directly from the browser. For real-value rewards, configure trusted server-side validation and restrictive Firestore rules.</p>
+          <p class="sub">WasteLess encourages recycling by rewarding sustainable actions. Collect points and redeem available rewards.</p>
+          <p class="note">Points are for this demo. Client-side catalogue prices are not suitable for rewards with real monetary value.</p>
         </section>
       </div>
     </div>
@@ -325,117 +351,63 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import {getFirestore,doc,getDoc,setDoc,updateDoc,collection,query,orderBy,limit,onSnapshot,serverTimestamp,runTransaction} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-import {
-  getAuth,
-  onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  updateProfile
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  collection,
-  query,
-  orderBy,
-  limit,
-  onSnapshot,
-  serverTimestamp,
-  runTransaction
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCVfxa0DOThWiLc6PaL8nZGje6GB0n-C_g",
-  authDomain: "wasteless-7d8eb.firebaseapp.com",
-  projectId: "wasteless-7d8eb",
-  storageBucket: "wasteless-7d8eb.firebasestorage.app",
-  messagingSenderId: "547430030019",
-  appId: "1:547430030019:web:432cc749bc1e14e1fb2076"
+const firebaseConfig={
+  apiKey:"AIzaSyCVfxa0DOThWiLc6PaL8nZGje6GB0n-C_g",
+  authDomain:"wasteless-7d8eb.firebaseapp.com",
+  projectId:"wasteless-7d8eb",
+  storageBucket:"wasteless-7d8eb.firebasestorage.app",
+  messagingSenderId:"547430030019",
+  appId:"1:547430030019:web:432cc749bc1e14e1fb2076"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const $=id=>document.getElementById(id);
 
-const $ = id => document.getElementById(id);
-
-const themeNames = {
-  light: "Light",
-  dark: "Dark",
-  forest: "Forest",
-  ocean: "Ocean"
-};
-
-function applyTheme(theme, save = true) {
-  if (!Object.prototype.hasOwnProperty.call(themeNames, theme)) {
-    theme = "light";
-  }
-
-  document.body.dataset.theme = theme;
-
-  document.querySelectorAll("[data-theme-choice]").forEach(button => {
-    button.setAttribute(
-      "aria-pressed",
-      String(button.dataset.themeChoice === theme)
-    );
+const themeNames={light:"Light",dark:"Dark",forest:"Forest",ocean:"Ocean"};
+function applyTheme(theme,save=true){
+  if(!Object.prototype.hasOwnProperty.call(themeNames,theme)) theme="light";
+  document.body.dataset.theme=theme;
+  document.querySelectorAll("[data-theme-choice]").forEach(button=>{
+    button.setAttribute("aria-pressed",String(button.dataset.themeChoice===theme));
   });
-
-  $("themeStatus").textContent = `${themeNames[theme]} theme selected.`;
-
-  document.querySelector('meta[name="theme-color"]').content = {
-    light: "#f7f8f6",
-    dark: "#151a17",
-    forest: "#edf4ed",
-    ocean: "#f1f7fa"
+  $("themeStatus").textContent=`${themeNames[theme]} theme selected.`;
+  document.querySelector('meta[name="theme-color"]').content={
+    light:"#f7f8f6",dark:"#151a17",forest:"#edf4ed",ocean:"#f1f7fa"
   }[theme];
-
-  if (save) {
-    try {
-      localStorage.setItem("wasteless-theme", theme);
-    } catch (e) {}
-  }
+  if(save){try{localStorage.setItem("wasteless-theme",theme);}catch(e){}}
 }
-
-document.querySelectorAll("[data-theme-choice]").forEach(button => {
-  button.addEventListener("click", () => {
-    applyTheme(button.dataset.themeChoice);
-  });
+document.querySelectorAll("[data-theme-choice]").forEach(button=>{
+  button.addEventListener("click",()=>applyTheme(button.dataset.themeChoice));
 });
+let initialTheme="light";
+try{initialTheme=localStorage.getItem("wasteless-theme")||"light";}catch(e){}
+applyTheme(initialTheme,false);
 
-let initialTheme = "light";
-try {
-  initialTheme = localStorage.getItem("wasteless-theme") || "light";
-} catch (e) {}
-applyTheme(initialTheme, false);
+let user=null,userData=null,leaderRows=[],unsubscribe=null;
 
-let user = null;
-let userData = null;
-let leaderRows = [];
-let unsubscribe = null;
-
-const rewards = [
-  {id:"reusable-bottle",name:"Reusable Bottle",desc:"A bottle for everyday hydration.",cost:300,icon:"bottle"},
-  {id:"reusable-bag",name:"Reusable Tote Bag",desc:"Carry shopping without disposable bags.",cost:200,icon:"bag"},
-  {id:"reusable-cup",name:"Reusable Cup",desc:"Bring your own cup for drinks.",cost:250,icon:"cup"},
-  {id:"wireless-mouse",name:"Wireless Mouse",desc:"A practical computer accessory.",cost:1200,icon:"mouse"},
-  {id:"mechanical-keyboard",name:"Mechanical Keyboard",desc:"An upgrade for your desk setup.",cost:3500,icon:"keyboard"},
-  {id:"headphones",name:"Wireless Headphones",desc:"Listen to music and audio on the go.",cost:2800,icon:"headphones"},
-  {id:"usb-cable",name:"USB-C Cable",desc:"A cable for compatible devices.",cost:500,icon:"cable"},
-  {id:"lunchbox",name:"Reusable Lunchbox",desc:"Pack meals in a reusable container.",cost:700,icon:"lunchbox"},
-  {id:"desk-lamp",name:"LED Desk Lamp",desc:"A useful addition to your study desk.",cost:1800,icon:"lamp"},
-  {id:"plant-kit",name:"Mini Plant Kit",desc:"Grow a little greenery at home.",cost:600,icon:"plant"},
-  {id:"notebook",name:"Recycled Notebook",desc:"A notebook made with recycled paper.",cost:350,icon:"notebook"},
-  {id:"gift-voucher",name:"Eco Reward Voucher",desc:"A voucher from a participating shop.",cost:2000,icon:"voucher"}
+const rewards=[
+{id:"reusable-bottle",name:"Reusable Bottle",desc:"A bottle for everyday hydration.",cost:300,icon:"bottle"},
+{id:"reusable-bag",name:"Reusable Tote Bag",desc:"Carry shopping without disposable bags.",cost:200,icon:"bag"},
+{id:"reusable-cup",name:"Reusable Cup",desc:"Bring your own cup for drinks.",cost:250,icon:"cup"},
+{id:"wireless-mouse",name:"Wireless Mouse",desc:"A practical computer accessory.",cost:1200,icon:"mouse"},
+{id:"mechanical-keyboard",name:"Mechanical Keyboard",desc:"An upgrade for your desk setup.",cost:3500,icon:"keyboard"},
+{id:"headphones",name:"Wireless Headphones",desc:"Listen to music and audio on the go.",cost:2800,icon:"headphones"},
+{id:"usb-cable",name:"USB-C Cable",desc:"A cable for compatible devices.",cost:500,icon:"cable"},
+{id:"lunchbox",name:"Reusable Lunchbox",desc:"Pack meals in a reusable container.",cost:700,icon:"lunchbox"},
+{id:"desk-lamp",name:"LED Desk Lamp",desc:"A useful addition to your study desk.",cost:1800,icon:"lamp"},
+{id:"plant-kit",name:"Mini Plant Kit",desc:"Grow a little greenery at home.",cost:600,icon:"plant"},
+{id:"notebook",name:"Recycled Notebook",desc:"A notebook made with recycled paper.",cost:350,icon:"notebook"},
+{id:"gift-voucher",name:"Eco Reward Voucher",desc:"A voucher from a participating shop.",cost:2000,icon:"voucher"}
 ];
+const cart=new Map();
 
-const icons = {
+const icons={
   theme:'<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z"/>',
   leaf:'<path d="M20 4c-9 0-15 4-15 11a5 5 0 0 0 5 5c7 0 11-7 10-16Z"/><path d="M4 21c3-6 7-9 12-12"/>',
   dashboard:'<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/>',
@@ -456,547 +428,291 @@ const icons = {
   voucher:'<path d="M3 6h18v4a2 2 0 0 0 0 4v4H3v-4a2 2 0 0 0 0-4V6Z"/><path d="m13 8-4 8"/>'
 };
 
-function svg(type) {
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[type] || icons.leaf}</svg>`;
+function svg(type){
+ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[type]||icons.leaf}</svg>`;
+}
+function notice(id,msg,type="info"){
+ const el=$(id);el.textContent=msg;el.className=`notice show ${type}`;
+}
+function clearNotice(id){$(id).textContent="";$(id).className="notice";}
+function fmt(n){return Number(n||0).toLocaleString();}
+function errorText(e){
+ const known={
+ "auth/email-already-in-use":"That email already has an account.",
+ "auth/invalid-email":"Enter a valid email address.",
+ "auth/weak-password":"Use a password with at least 6 characters.",
+ "auth/invalid-credential":"Email or password is incorrect.",
+ "permission-denied":"Permission denied. Check your Firestore security rules.",
+ "functions/not-found":"The required Cloud Function has not been deployed.",
+ "functions/unavailable":"The server function is unavailable."
+ };
+ return known[e?.code]||e?.message||"Something went wrong. Please try again.";
+}
+function validateName(value){
+ const name=value.trim();
+ if(name.length<1||name.length>30)throw Error("Display names must be 1–30 characters.");
+ return name;
 }
 
-function notice(id, message, type = "info") {
-  const el = $(id);
-  el.textContent = message;
-  el.className = `notice show ${type}`;
+function setTab(name){
+ document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));
+ document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===`page-${name}`));
+ const titles={
+ dashboard:["A little less waste.<br>A better tomorrow.","Recycle, collect points, and make a difference."],
+ rewards:["Good choices. Great rewards.","Use your verified points to redeem useful items."],
+ leaderboard:["Progress, together.","See how the WasteLess community is doing."],
+ account:["Your WasteLess account.","Manage your profile and track your contributions."]
+ };
+ $("heroTitle").innerHTML=titles[name][0];
+ $("heroDescription").textContent=titles[name][1];
+ if(name==="leaderboard")renderLeaderboard();
+ if(name==="account"&&!user)$("email").focus();
+ window.scrollTo({top:0,behavior:"smooth"});
 }
+document.querySelectorAll(".tab").forEach(b=>{
+ const labels={dashboard:["dashboard","Home"],rewards:["rewards","Rewards"],leaderboard:["leaderboard","Leaderboard"],account:["account","Account"]};
+ const [ico,label]=labels[b.dataset.tab];
+ b.innerHTML=svg(ico)+`<span>${label}</span>`;
+ b.addEventListener("click",()=>setTab(b.dataset.tab));
+});
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.go)));
+$("brandIcon").innerHTML=svg("leaf");
+$("heroIcon").innerHTML=svg("leaf");
+$("dashboardIcon").innerHTML=svg("dashboard");
+$("quickRewardIcon").innerHTML=svg("rewards");
+$("quickLeaderIcon").innerHTML=svg("leaderboard");
+$("rewardIcon").innerHTML=svg("rewards");
+$("leaderIcon").innerHTML=svg("leaderboard");
+$("accountIcon").innerHTML=svg("account");
+$("themeIcon").innerHTML=svg("theme");
 
-function clearNotice(id) {
-  $(id).textContent = "";
-  $(id).className = "notice";
-}
-
-function fmt(value) {
-  return Number(value || 0).toLocaleString();
-}
-
-function errorText(error) {
-  const known = {
-    "auth/email-already-in-use": "That email already has an account.",
-    "auth/invalid-email": "Enter a valid email address.",
-    "auth/weak-password": "Use a password with at least 6 characters.",
-    "auth/invalid-credential": "Email or password is incorrect.",
-    "permission-denied": "Permission denied. Check your Firestore security rules."
-  };
-  return known[error?.code] || error?.message || "Something went wrong. Please try again.";
-}
-
-function validateName(value) {
-  const name = String(value || "").trim();
-  if (name.length < 1 || name.length > 30) {
-    throw Error("Display names must be 1–30 characters.");
-  }
-  return name;
-}
-
-function setTab(name) {
-  document.querySelectorAll(".tab").forEach(button => {
-    button.classList.toggle("active", button.dataset.tab === name);
+function renderRewards(){
+ const root=$("rewards");root.replaceChildren();
+ for(const r of rewards){
+  const card=document.createElement("article");card.className="reward";
+  const art=document.createElement("div");art.className="reward-art";art.innerHTML=svg(r.icon);
+  const title=document.createElement("h3");title.textContent=r.name;
+  const desc=document.createElement("p");desc.className="reward-desc";desc.textContent=r.desc;
+  const cost=document.createElement("div");cost.className="reward-cost";cost.textContent=fmt(r.cost)+" points";
+  const btn=document.createElement("button");btn.className="btn secondary";btn.type="button";btn.textContent="Add to cart";
+  btn.addEventListener("click",()=>{
+   cart.set(r.id,(cart.get(r.id)||0)+1);
+   renderCart();
+   notice("rewardNotice",`${r.name} added to your cart.`,"success");
   });
-
-  document.querySelectorAll(".page").forEach(page => {
-    page.classList.toggle("active", page.id === `page-${name}`);
+  card.append(art,title,desc,cost,btn);root.append(card);
+ }
+ $("rewardCount").textContent=rewards.length;
+ const r=rewards.find(x=>x.id==="wireless-mouse");
+ const art=document.createElement("div");art.className="reward-art";art.style.height="70px";art.innerHTML=svg(r.icon);
+ const title=document.createElement("strong");title.style.fontSize="13px";title.textContent=r.name;
+ const desc=document.createElement("p");desc.className="sub";desc.textContent=fmt(r.cost)+" points";
+ $("featuredReward").replaceChildren(art,title,desc);
+ renderCart();
+}
+function cartEntries(){
+ return [...cart.entries()].map(([id,quantity])=>({reward:rewards.find(r=>r.id===id),quantity}))
+  .filter(item=>item.reward&&item.quantity>0);
+}
+function cartTotal(){return cartEntries().reduce((sum,item)=>sum+item.reward.cost*item.quantity,0);}
+function renderCart(){
+ const root=$("cartItems");root.replaceChildren();
+ const entries=cartEntries();
+ const count=entries.reduce((sum,item)=>sum+item.quantity,0);
+ $("cartCount").textContent=`${count} ${count===1?"item":"items"}`;
+ $("cartTotal").textContent=fmt(cartTotal())+" points";
+ $("checkoutBtn").disabled=!entries.length;
+ $("clearCartBtn").disabled=!entries.length;
+ if(!entries.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="Your cart is empty. Add rewards below to get started.";root.append(empty);return;}
+ for(const item of entries){
+  const {reward:r,quantity}=item;
+  const row=document.createElement("div");row.className="cart-item";
+  const info=document.createElement("div");
+  const name=document.createElement("div");name.className="cart-item-name";name.textContent=r.name;
+  const meta=document.createElement("div");meta.className="cart-item-meta";meta.textContent=`${fmt(r.cost)} points each`;
+  info.append(name,meta);
+  const controls=document.createElement("div");controls.className="qty-controls";
+  const minus=document.createElement("button");minus.className="qty-btn";minus.type="button";minus.textContent="−";minus.setAttribute("aria-label",`Remove one ${r.name}`);
+  minus.addEventListener("click",()=>{const next=(cart.get(r.id)||0)-1;if(next<=0)cart.delete(r.id);else cart.set(r.id,next);renderCart();});
+  const qty=document.createElement("span");qty.className="qty-number";qty.textContent=String(quantity);
+  const plus=document.createElement("button");plus.className="qty-btn";plus.type="button";plus.textContent="+";plus.setAttribute("aria-label",`Add one ${r.name}`);
+  plus.addEventListener("click",()=>{cart.set(r.id,(cart.get(r.id)||0)+1);renderCart();});
+  controls.append(minus,qty,plus);
+  const line=document.createElement("div");line.className="cart-line-total";line.textContent=fmt(r.cost*quantity)+" pts";
+  row.append(info,controls,line);root.append(row);
+ }
+}
+async function checkout(){
+ clearNotice("rewardNotice");
+ if(!user){notice("rewardNotice","Sign in before checking out.");setTab("account");return;}
+ const entries=cartEntries();
+ if(!entries.length){notice("rewardNotice","Your cart is empty.");return;}
+ const total=cartTotal();
+ const orderSummary=entries.map(({reward,quantity})=>`${reward.name} × ${quantity}`).join(", ");
+ if(!confirm(`Check out ${entries.reduce((sum,item)=>sum+item.quantity,0)} item(s) for ${fmt(total)} points?\n\n${orderSummary}\n\nNo real money will be charged.`))return;
+ const button=$("checkoutBtn");button.disabled=true;button.textContent="Checking out…";
+ try{
+  const userRef=doc(db,"users",user.uid);
+  const redemptionRef=doc(collection(db,"redemptions"));
+  const entriesForRecord=entries.map(({reward,quantity})=>({
+   rewardId:reward.id,rewardName:reward.name,quantity,
+   pointsEach:reward.cost,subtotal:reward.cost*quantity
+  }));
+  await runTransaction(db,async transaction=>{
+   const userSnap=await transaction.get(userRef);
+   if(!userSnap.exists())throw new Error("Your member account could not be found.");
+   const data=userSnap.data();
+   const currentPoints=Number(data.points??0);
+   if(!Number.isFinite(currentPoints)||currentPoints<0)throw new Error("Your points balance is invalid.");
+   if(currentPoints<total)throw new Error(`Not enough points. Your cart costs ${fmt(total)} points, but you have ${fmt(currentPoints)}.`);
+   transaction.update(userRef,{points:currentPoints-total});
+   transaction.set(redemptionRef,{
+    userId:user.uid,
+    email:user.email||"",
+    displayName:data.displayName||user.displayName||"WasteLess Member",
+    rewardId:"cart-checkout",
+    rewardName:orderSummary,
+    items:entriesForRecord,
+    pointsCost:total,
+    status:"pending",
+    createdAt:serverTimestamp()
+   });
   });
-
-  const titles = {
-    dashboard: ["A little less waste.<br>A better tomorrow.", "Collect points, redeem rewards, and make a difference."],
-    rewards: ["Good choices. Great rewards.", "Use your available points to redeem useful items."],
-    leaderboard: ["Progress, together.", "See how the WasteLess community is doing."],
-    account: ["Your WasteLess account.", "Manage your profile and track your contributions."]
-  };
-
-  $("heroTitle").innerHTML = titles[name][0];
-  $("heroDescription").textContent = titles[name][1];
-
-  if (name === "leaderboard") renderLeaderboard();
-  if (name === "account" && !user) $("email").focus();
-
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  cart.clear();
+  await refreshProfile();
+  renderCart();
+  notice("rewardNotice",`Checkout successful! ${fmt(total)} points deducted. Your order is pending fulfilment.`,"success");
+ }catch(e){
+  console.error("WasteLess checkout error:",e);
+  const message=errorText(e);
+  notice("rewardNotice","Checkout failed: "+message,"error");
+  alert("Checkout Failed\n\n"+message);
+ }finally{
+  button.disabled=!cartEntries().length;
+  button.textContent="Checkout";
+ }
+}
+$("checkoutBtn").addEventListener("click",checkout);
+$("clearCartBtn").addEventListener("click",()=>{cart.clear();renderCart();clearNotice("rewardNotice");});
+function renderStats(){
+ const points=user?fmt(userData?.points):"—",visits=user?fmt(userData?.visits):"—";
+ $("pointsValue").textContent=points;$("visitsValue").textContent=visits;
+ $("rewardBalance").textContent=points;
+ $("accountPoints").textContent=points;$("accountVisits").textContent=visits;
+ const idx=user?leaderRows.findIndex(x=>x.id===user.uid):-1;
+ const rank=idx<0?"—":"#"+(idx+1);
+ $("rankValue").textContent=rank;$("accountRank").textContent=rank;
+ $("progressSummary").textContent=user
+  ?`${fmt(userData?.visits)} verified actions completed. You have ${points} points available.`
+  :"Sign in to view your progress.";
+}
+function renderLeaderboard(){
+ const root=$("leaderboard");root.replaceChildren();
+ if(!user){const p=document.createElement("div");p.className="empty";p.textContent="Sign in to view the community leaderboard.";root.append(p);return;}
+ if(!leaderRows.length){const p=document.createElement("div");p.className="empty";p.textContent="No leaderboard entries yet.";root.append(p);return;}
+ leaderRows.forEach((m,i)=>{
+  const row=document.createElement("div");row.className="leader-row";
+  const rank=document.createElement("div");rank.className="rank";rank.textContent="#"+(i+1);
+  const avatar=document.createElement("div");avatar.className="avatar";avatar.textContent=(m.displayName||"W").trim().charAt(0).toUpperCase();
+  const info=document.createElement("div");info.className="leader-info";
+  const name=document.createElement("div");name.className="leader-name";
+  name.textContent=(m.displayName||"WasteLess Member")+(m.id===user.uid?" (You)":"");
+  const meta=document.createElement("div");meta.className="leader-meta";meta.textContent=fmt(m.visits)+" verified actions";
+  const points=document.createElement("div");points.className="leader-points";points.textContent=fmt(m.points)+" pts";
+  info.append(name,meta);row.append(rank,avatar,info,points);root.append(row);
+ });
+}
+async function ensureUserDoc(u,name){
+ const ref=doc(db,"users",u.uid),snap=await getDoc(ref);
+ if(!snap.exists()){
+  const n=validateName(name||u.displayName||"WasteLess Member");
+  await setDoc(ref,{displayName:n,points:0,visits:0,createdAt:serverTimestamp()});
+  return {displayName:n,points:0,visits:0};
+ }
+ const d=snap.data();
+ return {displayName:d.displayName||u.displayName||"WasteLess Member",points:Number(d.points||0),visits:Number(d.visits||0)};
+}
+async function refreshProfile(){
+ if(!user)return;
+ userData=await ensureUserDoc(user);
+ $("accountName").textContent=userData.displayName;
+ $("accountEmail").textContent=user.email||"";
+ $("newDisplayName").value=userData.displayName;
+ renderStats();
+}
+function startLeaderboard(){
+ if(unsubscribe){unsubscribe();unsubscribe=null;}
+ leaderRows=[];renderLeaderboard();
+ if(!user)return;
+ unsubscribe=onSnapshot(query(collection(db,"users"),orderBy("points","desc"),limit(50)),snap=>{
+  leaderRows=snap.docs.map(d=>({id:d.id,...d.data()}));
+  renderLeaderboard();renderStats();clearNotice("leaderNotice");
+ },e=>notice("leaderNotice","Leaderboard error: "+errorText(e),"error"));
 }
 
-const tabLabels = {
-  dashboard: ["dashboard", "Home"],
-  rewards: ["rewards", "Rewards"],
-  leaderboard: ["leaderboard", "Leaderboard"],
-  account: ["account", "Account"]
-};
-
-document.querySelectorAll(".tab").forEach(button => {
-  const [icon, label] = tabLabels[button.dataset.tab];
-  button.innerHTML = svg(icon) + `<span>${label}</span>`;
-  button.addEventListener("click", () => setTab(button.dataset.tab));
+$("authForm").addEventListener("submit",async e=>{
+ e.preventDefault();clearNotice("authNotice");
+ $("signInBtn").disabled=true;$("signUpBtn").disabled=true;
+ try{
+  await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
+  notice("authNotice","Signed in successfully.","success");
+ }catch(err){notice("authNotice",errorText(err),"error");}
+ finally{$("signInBtn").disabled=false;$("signUpBtn").disabled=false;}
 });
-
-document.querySelectorAll("[data-go]").forEach(button => {
-  button.addEventListener("click", () => setTab(button.dataset.go));
+$("signUpBtn").addEventListener("click",async()=>{
+ clearNotice("authNotice");
+ let name;
+ try{name=validateName($("displayName").value);}
+ catch(e){notice("authNotice",e.message,"error");return;}
+ if(!$("email").value.trim()||!$("password").value){
+  notice("authNotice","Enter an email and password first.","error");return;
+ }
+ $("signInBtn").disabled=true;$("signUpBtn").disabled=true;
+ try{
+  const cred=await createUserWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
+  await updateProfile(cred.user,{displayName:name});
+  await ensureUserDoc(cred.user,name);
+  notice("authNotice","Account created successfully.","success");
+ }catch(e){notice("authNotice",errorText(e),"error");}
+ finally{$("signInBtn").disabled=false;$("signUpBtn").disabled=false;}
 });
-
-$("brandIcon").innerHTML = svg("leaf");
-$("heroIcon").innerHTML = svg("leaf");
-$("dashboardIcon").innerHTML = svg("dashboard");
-$("quickRewardIcon").innerHTML = svg("rewards");
-$("quickLeaderIcon").innerHTML = svg("leaderboard");
-$("rewardIcon").innerHTML = svg("rewards");
-$("leaderIcon").innerHTML = svg("leaderboard");
-$("accountIcon").innerHTML = svg("account");
-$("themeIcon").innerHTML = svg("theme");
-
-function renderRewards() {
-  const root = $("rewards");
-  root.replaceChildren();
-
-  for (const reward of rewards) {
-    const card = document.createElement("article");
-    card.className = "reward";
-
-    const art = document.createElement("div");
-    art.className = "reward-art";
-    art.innerHTML = svg(reward.icon);
-
-    const title = document.createElement("h3");
-    title.textContent = reward.name;
-
-    const desc = document.createElement("p");
-    desc.className = "reward-desc";
-    desc.textContent = reward.desc;
-
-    const cost = document.createElement("div");
-    cost.className = "reward-cost";
-    cost.textContent = fmt(reward.cost) + " points";
-
-    const button = document.createElement("button");
-    button.className = "btn secondary";
-    button.type = "button";
-    button.textContent = "Redeem";
-    button.addEventListener("click", () => redeem(reward, button));
-
-    card.append(art, title, desc, cost, button);
-    root.append(card);
-  }
-
-  $("rewardCount").textContent = rewards.length;
-
-  const featured = rewards.find(item => item.id === "wireless-mouse");
-
-  const art = document.createElement("div");
-  art.className = "reward-art";
-  art.style.height = "70px";
-  art.innerHTML = svg(featured.icon);
-
-  const title = document.createElement("strong");
-  title.style.fontSize = "13px";
-  title.textContent = featured.name;
-
-  const desc = document.createElement("p");
-  desc.className = "sub";
-  desc.textContent = fmt(featured.cost) + " points";
-
-  $("featuredReward").replaceChildren(art, title, desc);
-}
-
-/*
- * REDEMPTION CHANGE:
- * No Firebase Functions.
- * Deducts points and writes a redemption document in one Firestore transaction.
- *
- * NOTE: The reward prices are currently stored in this client-side array.
- * This implementation is not secure against a malicious client unless your
- * Firestore rules independently enforce valid balance changes and prices.
- */
-async function redeem(reward, button) {
-  clearNotice("rewardNotice");
-
-  if (!user) {
-    notice("rewardNotice", "Sign in before redeeming a reward.");
-    setTab("account");
-    return;
-  }
-
-  if (!confirm(`Redeem ${reward.name} for ${fmt(reward.cost)} points?`)) {
-    return;
-  }
-
-  button.disabled = true;
-  button.textContent = "Processing…";
-
-  try {
-    const userRef = doc(db, "users", user.uid);
-    const redemptionRef = doc(collection(db, "redemptions"));
-
-    // Capture the signed-in identity before starting the transaction.
-    const memberId = user.uid;
-    const memberEmail = user.email || "";
-    const rewardCost = Number(reward.cost);
-
-    if (!Number.isFinite(rewardCost) || rewardCost <= 0) {
-      throw new Error("This reward has an invalid points cost.");
-    }
-
-    await runTransaction(db, async transaction => {
-      const userSnapshot = await transaction.get(userRef);
-
-      if (!userSnapshot.exists()) {
-        throw new Error("Your user profile was not found.");
-      }
-
-      const data = userSnapshot.data();
-      const currentPoints = Number(data.points ?? 0);
-
-      if (!Number.isFinite(currentPoints) || currentPoints < rewardCost) {
-        throw new Error("You do not have enough points.");
-      }
-
-      // Both writes commit together or neither write commits.
-      transaction.update(userRef, {
-        points: currentPoints - rewardCost
-      });
-
-      transaction.set(redemptionRef, {
-        userId: memberId,
-        email: memberEmail,
-        displayName: data.displayName || user.displayName || "WasteLess Member",
-        rewardId: String(reward.id),
-        rewardName: String(reward.name),
-        pointsCost: rewardCost,
-        status: "pending",
-        createdAt: serverTimestamp()
-      });
-    });
-
-    // Refresh the local display after Firestore confirms the transaction.
-    await refreshProfile();
-
-    notice(
-      "rewardNotice",
-      `Success! ${reward.name} was redeemed and ${fmt(rewardCost)} points were deducted. Your redemption is pending fulfilment.`,
-      "success"
-    );
-  } catch (error) {
-    console.error("Redemption failed:", error);
-
-    const message = error?.message || "Please try again.";
-    notice("rewardNotice", "Redemption failed: " + message, "error");
-  } finally {
-    button.disabled = false;
-    button.textContent = "Redeem";
-  }
-}
-
-function renderStats() {
-  const points = user ? fmt(userData?.points) : "—";
-  const visits = user ? fmt(userData?.visits) : "—";
-
-  $("pointsValue").textContent = points;
-  $("visitsValue").textContent = visits;
-  $("rewardBalance").textContent = points;
-  $("accountPoints").textContent = points;
-  $("accountVisits").textContent = visits;
-
-  const index = user ? leaderRows.findIndex(row => row.id === user.uid) : -1;
-  const rank = index < 0 ? "—" : "#" + (index + 1);
-
-  $("rankValue").textContent = rank;
-  $("accountRank").textContent = rank;
-
-  $("progressSummary").textContent = user
-    ? `${fmt(userData?.visits)} verified actions completed. You have ${points} points available.`
-    : "Sign in to view your progress.";
-}
-
-function renderLeaderboard() {
-  const root = $("leaderboard");
-  root.replaceChildren();
-
-  if (!user) {
-    const empty = document.createElement("div");
-    empty.className = "empty";
-    empty.textContent = "Sign in to view the community leaderboard.";
-    root.append(empty);
-    return;
-  }
-
-  if (!leaderRows.length) {
-    const empty = document.createElement("div");
-    empty.className = "empty";
-    empty.textContent = "No leaderboard entries yet.";
-    root.append(empty);
-    return;
-  }
-
-  leaderRows.forEach((member, index) => {
-    const row = document.createElement("div");
-    row.className = "leader-row";
-
-    const rank = document.createElement("div");
-    rank.className = "rank";
-    rank.textContent = "#" + (index + 1);
-
-    const avatar = document.createElement("div");
-    avatar.className = "avatar";
-    avatar.textContent = (member.displayName || "W").trim().charAt(0).toUpperCase();
-
-    const info = document.createElement("div");
-    info.className = "leader-info";
-
-    const name = document.createElement("div");
-    name.className = "leader-name";
-    name.textContent = (member.displayName || "WasteLess Member") +
-      (member.id === user.uid ? " (You)" : "");
-
-    const meta = document.createElement("div");
-    meta.className = "leader-meta";
-    meta.textContent = fmt(member.visits) + " verified actions";
-
-    const points = document.createElement("div");
-    points.className = "leader-points";
-    points.textContent = fmt(member.points) + " pts";
-
-    info.append(name, meta);
-    row.append(rank, avatar, info, points);
-    root.append(row);
-  });
-}
-
-async function ensureUserDoc(currentUser, name) {
-  const ref = doc(db, "users", currentUser.uid);
-  const snap = await getDoc(ref);
-  const email = (currentUser.email || "").trim();
-
-  if (!snap.exists()) {
-    const displayName = validateName(name || currentUser.displayName || "WasteLess Member");
-
-    const newUserData = {
-      displayName,
-      email,
-      points: 0,
-      visits: 0,
-      createdAt: serverTimestamp()
-    };
-
-    await setDoc(ref, newUserData);
-
-    return { displayName, email, points: 0, visits: 0 };
-  }
-
-  const data = snap.data();
-
-  if (email && data.email !== email) {
-    try {
-      await updateDoc(ref, { email });
-    } catch (error) {
-      console.warn("Could not update member email field:", error);
-    }
-  }
-
-  return {
-    displayName: data.displayName || currentUser.displayName || "WasteLess Member",
-    email: email || data.email || "",
-    points: Number(data.points || 0),
-    visits: Number(data.visits || 0)
-  };
-}
-
-async function refreshProfile() {
-  if (!user) return;
-
-  userData = await ensureUserDoc(user);
-
-  $("accountName").textContent = userData.displayName;
-  $("accountEmail").textContent = user.email || "";
-  $("newDisplayName").value = userData.displayName;
-
-  renderStats();
-}
-
-function startLeaderboard() {
-  if (unsubscribe) {
-    unsubscribe();
-    unsubscribe = null;
-  }
-
-  leaderRows = [];
-  renderLeaderboard();
-  renderStats();
-
-  if (!user) return;
-
-  const leaderboardQuery = query(
-    collection(db, "users"),
-    orderBy("points", "desc"),
-    limit(50)
-  );
-
-  unsubscribe = onSnapshot(
-    leaderboardQuery,
-    snapshot => {
-      leaderRows = snapshot.docs.map(document => ({
-        id: document.id,
-        ...document.data()
-      }));
-
-      renderLeaderboard();
-      renderStats();
-      clearNotice("leaderNotice");
-    },
-    error => {
-      notice("leaderNotice", "Leaderboard error: " + errorText(error), "error");
-    }
-  );
-}
-
-$("authForm").addEventListener("submit", async event => {
-  event.preventDefault();
-  clearNotice("authNotice");
-
-  $("signInBtn").disabled = true;
-  $("signUpBtn").disabled = true;
-
-  try {
-    await signInWithEmailAndPassword(
-      auth,
-      $("email").value.trim(),
-      $("password").value
-    );
-
-    notice("authNotice", "Signed in successfully.", "success");
-  } catch (error) {
-    notice("authNotice", errorText(error), "error");
-  } finally {
-    $("signInBtn").disabled = false;
-    $("signUpBtn").disabled = false;
-  }
+$("profileForm").addEventListener("submit",async e=>{
+ e.preventDefault();clearNotice("profileNotice");if(!user)return;
+ let name;try{name=validateName($("newDisplayName").value);}
+ catch(err){notice("profileNotice",err.message,"error");return;}
+ try{
+  await updateDoc(doc(db,"users",user.uid),{displayName:name});
+  await updateProfile(user,{displayName:name});
+  userData={...userData,displayName:name};
+  $("accountName").textContent=name;
+  notice("profileNotice","Display name updated.","success");
+ }catch(err){notice("profileNotice",errorText(err),"error");}
 });
-
-$("signUpBtn").addEventListener("click", async () => {
-  clearNotice("authNotice");
-
-  let name;
-  try {
-    name = validateName($("displayName").value);
-  } catch (error) {
-    notice("authNotice", error.message, "error");
-    return;
-  }
-
-  if (!$("email").value.trim() || !$("password").value) {
-    notice("authNotice", "Enter an email and password first.", "error");
-    return;
-  }
-
-  $("signInBtn").disabled = true;
-  $("signUpBtn").disabled = true;
-
-  try {
-    const credential = await createUserWithEmailAndPassword(
-      auth,
-      $("email").value.trim(),
-      $("password").value
-    );
-
-    await updateProfile(credential.user, { displayName: name });
-    await ensureUserDoc(credential.user, name);
-
-    notice("authNotice", "Account created successfully.", "success");
-  } catch (error) {
-    notice("authNotice", errorText(error), "error");
-  } finally {
-    $("signInBtn").disabled = false;
-    $("signUpBtn").disabled = false;
-  }
+$("signOutBtn").addEventListener("click",async()=>{
+ try{await signOut(auth);}catch(e){notice("profileNotice",errorText(e),"error");}
 });
+$("headerAccount").addEventListener("click",()=>setTab("account"));
 
-$("profileForm").addEventListener("submit", async event => {
-  event.preventDefault();
-  clearNotice("profileNotice");
 
-  if (!user) return;
-
-  let name;
-  try {
-    name = validateName($("newDisplayName").value);
-  } catch (error) {
-    notice("profileNotice", error.message, "error");
-    return;
-  }
-
-  try {
-    await updateDoc(doc(db, "users", user.uid), { displayName: name });
-    await updateProfile(user, { displayName: name });
-
-    userData = { ...userData, displayName: name };
-    $("accountName").textContent = name;
-
-    notice("profileNotice", "Display name updated.", "success");
-  } catch (error) {
-    notice("profileNotice", errorText(error), "error");
-  }
+onAuthStateChanged(auth,async u=>{
+ user=u;
+ $("signedOut").classList.toggle("hidden",!!u);
+ $("signedIn").classList.toggle("hidden",!u);
+ $("headerAccount").textContent=u?"My account":"Sign in";
+ if(u){
+  $("statusDot").classList.add("online");$("statusText").textContent="Signed in";
+  try{await refreshProfile();startLeaderboard();$("welcomeText").textContent="Welcome back, "+(userData.displayName||"member")+". Keep up your recycling progress.";}
+  catch(e){notice("profileNotice",errorText(e),"error");}
+ }else{
+  userData=null;leaderRows=[];
+  $("statusDot").classList.remove("online");$("statusText").textContent="Not signed in";
+  if(unsubscribe){unsubscribe();unsubscribe=null;}
+  renderStats();renderLeaderboard();
+  $("welcomeText").textContent="Sign in to track your points and redeem rewards.";
+ }
 });
-
-$("signOutBtn").addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-  } catch (error) {
-    notice("profileNotice", errorText(error), "error");
-  }
-});
-
-$("headerAccount").addEventListener("click", () => setTab("account"));
-
-onAuthStateChanged(auth, async currentUser => {
-  user = currentUser;
-
-  $("signedOut").classList.toggle("hidden", !!currentUser);
-  $("signedIn").classList.toggle("hidden", !currentUser);
-  $("headerAccount").textContent = currentUser ? "My account" : "Sign in";
-
-  if (currentUser) {
-    $("statusDot").classList.add("online");
-    $("statusText").textContent = "Signed in";
-
-    try {
-      await refreshProfile();
-      startLeaderboard();
-
-      $("welcomeText").textContent =
-        "Welcome back, " + (userData.displayName || "member") +
-        ". Keep up your sustainability progress.";
-    } catch (error) {
-      notice("profileNotice", errorText(error), "error");
-    }
-  } else {
-    userData = null;
-    leaderRows = [];
-
-    if (unsubscribe) {
-      unsubscribe();
-      unsubscribe = null;
-    }
-
-    $("statusDot").classList.remove("online");
-    $("statusText").textContent = "Not signed in";
-
-    renderStats();
-    renderLeaderboard();
-
-    $("welcomeText").textContent =
-      "Sign in to track your points and redeem rewards.";
-  }
-});
-
-window.addEventListener("online", () => {
-  $("statusText").textContent = user ? "Signed in" : "Online";
-  if (user) $("statusDot").classList.add("online");
-});
-
-window.addEventListener("offline", () => {
-  $("statusText").textContent = "Offline";
-  $("statusDot").classList.remove("online");
-});
+window.addEventListener("online",()=>{$("statusText").textContent=user?"Signed in":"Online";});
+window.addEventListener("offline",()=>{$("statusText").textContent="Offline";$("statusDot").classList.remove("online");});
 
 renderRewards();
 renderStats();
