@@ -162,6 +162,25 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
 .theme-swatch.forest{background:linear-gradient(135deg,#edf4ed 50%,#246b43 50%)}
 .theme-swatch.ocean{background:linear-gradient(135deg,#f1f7fa 50%,#237b91 50%)}
 .theme-status{font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6}
+
+.quest-list,.achievement-grid{display:grid;gap:10px}
+.quest-card,.achievement-card{border:1px solid var(--line);border-radius:13px;padding:14px;background:var(--surface);min-width:0}
+.quest-top,.achievement-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.quest-title,.achievement-title{font-size:12px;font-weight:750;line-height:1.5}
+.quest-desc,.achievement-desc{font-size:11px;color:var(--muted);line-height:1.6;margin-top:4px}
+.quest-reward{font-size:11px;font-weight:800;color:var(--green);white-space:nowrap}
+.progress-track{height:7px;background:var(--tab-bg);border-radius:99px;overflow:hidden;margin-top:12px}
+.progress-fill{height:100%;width:0;background:var(--green);border-radius:99px;transition:width .2s ease}
+.quest-foot{display:flex;justify-content:space-between;gap:10px;margin-top:7px;font-size:10px;color:var(--muted)}
+.achievement-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.achievement-card{padding:13px}
+.achievement-icon{width:34px;height:34px;border-radius:10px;background:var(--soft);display:grid;place-items:center;font-size:18px;margin-bottom:10px}
+.achievement-card.unlocked{border-color:var(--green);background:var(--light)}
+.achievement-card.unlocked .achievement-icon{background:var(--surface)}
+.achievement-status{font-size:10px;font-weight:750;color:var(--muted);margin-top:8px}
+.achievement-card.unlocked .achievement-status{color:var(--green)}
+.section-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+@media(max-width:560px){.achievement-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:850px){
  .grid{grid-template-columns:1fr}
  .reward-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -193,6 +212,104 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+/* WasteLess homepage spacing consistency */
+#page-dashboard {
+  --section-gap: 18px;
+  --panel-padding: 22px;
+}
+
+#page-dashboard > .stats {
+  margin-bottom: var(--section-gap);
+}
+
+#page-dashboard > .grid {
+  column-gap: var(--section-gap);
+  row-gap: var(--section-gap);
+}
+
+#page-dashboard > .grid + .grid {
+  margin-top: var(--section-gap) !important;
+}
+
+#page-dashboard .stack {
+  gap: var(--section-gap);
+}
+
+#page-dashboard .panel {
+  padding: var(--panel-padding);
+}
+
+#page-dashboard .panel-head {
+  margin-bottom: 16px;
+  gap: 14px;
+}
+
+#page-dashboard .quest-list,
+#page-dashboard .achievement-grid {
+  gap: 12px;
+}
+
+#page-dashboard .quest-card,
+#page-dashboard .achievement-card {
+  padding: 15px;
+}
+
+#page-dashboard .progress-track {
+  margin-top: 12px;
+}
+
+#page-dashboard .note {
+  margin-bottom: 0;
+}
+
+#page-dashboard .section-actions {
+  gap: 8px;
+}
+
+#page-dashboard .quick-grid {
+  gap: 12px;
+}
+
+#page-dashboard .quick {
+  padding: 16px;
+}
+
+@media (max-width: 850px) {
+  #page-dashboard .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  #page-dashboard {
+    --section-gap: 14px;
+    --panel-padding: 16px;
+  }
+
+  #page-dashboard .panel-head {
+    margin-bottom: 14px;
+    gap: 10px;
+  }
+
+  #page-dashboard .quest-card,
+  #page-dashboard .achievement-card {
+    padding: 12px;
+  }
+
+  #page-dashboard .quick-grid {
+    gap: 9px;
+  }
+
+  #page-dashboard .quick {
+    padding: 12px;
+  }
+
+  #page-dashboard .section-actions .btn {
+    padding: 9px 11px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -258,6 +375,22 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
           <button class="btn secondary" data-go="rewards" type="button" style="margin-top:12px">Explore all rewards</button>
         </section>
       </div>
+    </div>
+    <div class="grid" style="margin-top:18px">
+      <section class="panel">
+        <div class="panel-head">
+          <div><h2>Daily quests</h2><p class="sub" id="questSubtitle">New challenges every day.</p></div>
+          <div class="section-actions"><button class="btn secondary" id="refreshProgressBtn" type="button">Refresh</button></div>
+        </div>
+        <div id="dailyQuests" class="quest-list"><div class="empty">Sign in to see today's quests.</div></div>
+        <div id="questNotice" class="notice" role="status" aria-live="polite"></div>
+        <p class="note">Quest progress counts verified recycling records by material type, not individual items. Daily quests rotate at midnight Singapore time. Quest points are shown as rewards, but your current Firestore rules must explicitly allow secure quest claims before they can be added to your balance.</p>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><h2>Lifetime achievements</h2><p class="sub">Milestones stay with your account.</p></div></div>
+        <div id="achievements" class="achievement-grid"><div class="empty">Sign in to view achievements.</div></div>
+        <p class="note">Rank achievements unlock when your current leaderboard rank reaches the milestone and are remembered in this browser.</p>
+      </section>
     </div>
   </section>
 
@@ -353,7 +486,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import {getFirestore,doc,getDoc,setDoc,updateDoc,collection,query,orderBy,limit,onSnapshot,serverTimestamp,runTransaction} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import {getFirestore,doc,getDoc,getDocs,setDoc,updateDoc,collection,query,where,orderBy,limit,onSnapshot,serverTimestamp,runTransaction} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 const firebaseConfig={
   apiKey:"AIzaSyCVfxa0DOThWiLc6PaL8nZGje6GB0n-C_g",
@@ -390,6 +523,7 @@ try{initialTheme=localStorage.getItem("wasteless-theme")||"light";}catch(e){}
 applyTheme(initialTheme,false);
 
 let user=null,userData=null,leaderRows=[],unsubscribe=null;
+let recyclingHistory=[],redemptionHistory=[],gamificationLoaded=false;
 
 const rewards=[
 {id:"reusable-bottle",name:"Reusable Bottle",desc:"A bottle for everyday hydration.",cost:300,icon:"bottle"},
@@ -580,6 +714,7 @@ async function checkout(){
   });
   cart.clear();
   await refreshProfile();
+  await loadGamificationData();
   renderCart();
   notice("rewardNotice",`Checkout successful! ${fmt(total)} points deducted. Your order is pending fulfilment.`,"success");
  }catch(e){
@@ -594,6 +729,117 @@ async function checkout(){
 }
 $("checkoutBtn").addEventListener("click",checkout);
 $("clearCartBtn").addEventListener("click",()=>{cart.clear();renderCart();clearNotice("rewardNotice");});
+const questPool=[
+ {id:"bottles",title:"Recycle 10 bottles",material:"plastic",goal:10,reward:10,description:"10 verified plastic recycling records"},
+ {id:"textiles",title:"Recycle 20 textiles",material:"textile",goal:20,reward:15,description:"20 verified textile recycling records"},
+ {id:"cardboard",title:"Recycle 30 cardboards",material:"paper",goal:30,reward:20,description:"30 verified paper recycling records"},
+ {id:"glass",title:"Recycle 5 glass items",material:"glass",goal:5,reward:25,description:"5 verified glass recycling records"},
+ {id:"ewaste",title:"Recycle 1 e-waste item",material:"ewaste",goal:1,reward:30,description:"1 verified e-waste recycling record"},
+ {id:"metal",title:"Recycle 3 metal items",material:"metal",goal:3,reward:15,description:"3 verified metal recycling records"},
+ {id:"mixed",title:"Complete 5 recycling actions",material:"any",goal:5,reward:10,description:"5 verified recycling records of any material"}
+];
+const achievementList=[
+ {id:"first-touch",name:"First Touch",desc:"Recycle through WasteLess for the first time.",icon:"🌱",check:m=>m.records>=1},
+ {id:"pioneer",name:"Pioneer",desc:"Recycle at least 50 kg of materials.",icon:"♻️",check:m=>m.kg>=50,progress:m=>`${Math.min(m.kg,50).toFixed(1)} / 50 kg`},
+ {id:"expert",name:"Expert",desc:"Recycle at least 100 kg of materials.",icon:"🧪",check:m=>m.kg>=100,progress:m=>`${Math.min(m.kg,100).toFixed(1)} / 100 kg`},
+ {id:"master",name:"Master",desc:"Reach the top 5 on the leaderboard.",icon:"🏅",check:m=>m.rank>0&&m.rank<=5},
+ {id:"legend",name:"Legend",desc:"Reach the top 3 on the leaderboard.",icon:"🏆",check:m=>m.rank>0&&m.rank<=3},
+ {id:"unrivaled",name:"Unrivaled",desc:"Reach 1st place on the leaderboard.",icon:"👑",check:m=>m.rank===1},
+ {id:"reward-frenzy",name:"Reward Frenzy",desc:"Purchase 10 rewards in total.",icon:"🎁",check:m=>m.purchases>=10,progress:m=>`${Math.min(m.purchases,10)} / 10 rewards`},
+ {id:"spender",name:"Spender",desc:"Spend more than 1,000 points on rewards.",icon:"🛍️",check:m=>m.spent>1000,progress:m=>`${fmt(Math.min(m.spent,1000))} / 1,000 points`},
+ {id:"enthusiast",name:"Enthusiast",desc:"Complete 100 verified recycling actions.",icon:"🔥",check:m=>m.records>=100,progress:m=>`${Math.min(m.records,100)} / 100 actions`}
+];
+function singaporeDateKey(date=new Date()){
+ return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Singapore",year:"numeric",month:"2-digit",day:"2-digit"}).format(date);
+}
+function dailyQuestSelection(){
+ const key=singaporeDateKey();
+ // Seeded shuffle: the same set appears for everyone on a given Singapore calendar day.
+ let seed=0;for(const ch of key)seed=(seed*31+ch.charCodeAt(0))>>>0;
+ const arr=[...questPool];
+ for(let i=arr.length-1;i>0;i--){seed=(seed*1664525+1013904223)>>>0;const j=seed%(i+1);[arr[i],arr[j]]=[arr[j],arr[i]];}
+ return arr.slice(0,5);
+}
+function unlockedStorageKey(){return user?`wasteless-lifetime-rank-achievements-${user.uid}`:"";}
+function rememberedRankAchievements(){
+ if(!user)return new Set();
+ try{return new Set(JSON.parse(localStorage.getItem(unlockedStorageKey())||"[]"));}catch(e){return new Set();}
+}
+function rememberRankAchievements(ids){
+ if(!user)return;
+ try{localStorage.setItem(unlockedStorageKey(),JSON.stringify([...ids]));}catch(e){}
+}
+async function loadGamificationData(){
+ if(!user)return;
+ const uid=user.uid;
+ const [recordsSnap,redemptionsSnap]=await Promise.all([
+  getDocs(query(collection(db,"recyclingRecords"),where("memberId","==",uid))),
+  getDocs(query(collection(db,"redemptions"),where("userId","==",uid)))
+ ]);
+ recyclingHistory=recordsSnap.docs.map(d=>({id:d.id,...d.data()}));
+ redemptionHistory=redemptionsSnap.docs.map(d=>({id:d.id,...d.data()}));
+ gamificationLoaded=true;
+ renderDailyQuests();renderAchievements();
+}
+function questProgress(quest){
+ const relevant=quest.material==="any"?recyclingHistory:recyclingHistory.filter(r=>String(r.material||"").toLowerCase()===quest.material);
+ return relevant.length;
+}
+function renderDailyQuests(){
+ const root=$("dailyQuests");root.replaceChildren();
+ if(!user){root.innerHTML='<div class="empty">Sign in to see today\'s quests.</div>';return;}
+ if(!gamificationLoaded){root.innerHTML='<div class="empty">Loading your verified recycling records…</div>';return;}
+ const key=singaporeDateKey();$("questSubtitle").textContent=`${key} · New selection every day`;
+ for(const quest of dailyQuestSelection()){
+  const progress=questProgress(quest),done=progress>=quest.goal,pct=Math.min(100,progress/quest.goal*100);
+  const card=document.createElement("article");card.className="quest-card";
+  const top=document.createElement("div");top.className="quest-top";
+  const main=document.createElement("div");
+  const title=document.createElement("div");title.className="quest-title";title.textContent=quest.title;
+  const desc=document.createElement("div");desc.className="quest-desc";desc.textContent=quest.description;
+  main.append(title,desc);
+  const reward=document.createElement("div");reward.className="quest-reward";reward.textContent=`+${quest.reward} pts`;
+  top.append(main,reward);
+  const track=document.createElement("div");track.className="progress-track";
+  const fill=document.createElement("div");fill.className="progress-fill";fill.style.width=pct+"%";track.append(fill);
+  const foot=document.createElement("div");foot.className="quest-foot";
+  const count=document.createElement("span");count.textContent=`${Math.min(progress,quest.goal)} / ${quest.goal} records`;
+  const status=document.createElement("span");status.textContent=done?"Completed":"In progress";
+  foot.append(count,status);card.append(top,track,foot);root.append(card);
+ }
+}
+function renderAchievements(){
+ const root=$("achievements");root.replaceChildren();
+ if(!user){root.innerHTML='<div class="empty">Sign in to view achievements.</div>';return;}
+ if(!gamificationLoaded){root.innerHTML='<div class="empty">Loading your lifetime achievements…</div>';return;}
+ const kg=recyclingHistory.reduce((sum,r)=>sum+Math.max(0,Number(r.massKg)||0),0);
+ const purchases=redemptionHistory.reduce((sum,r)=>sum+(Array.isArray(r.items)?r.items.reduce((n,item)=>n+Math.max(0,Number(item.quantity)||0),0):Math.max(0,Number(r.quantity)||1)),0);
+ const spent=redemptionHistory.reduce((sum,r)=>sum+Math.max(0,Number(r.pointsCost)||0),0);
+ const rankIndex=leaderRows.findIndex(row=>row.id===user.uid);const rank=rankIndex<0?0:rankIndex+1;
+ const metrics={records:recyclingHistory.length,kg,purchases,spent,rank};
+ const remembered=rememberedRankAchievements();
+ const rankIds=["master","legend","unrivaled"];
+ for(const a of achievementList){
+  let unlocked=a.check(metrics);
+  if(rankIds.includes(a.id)&&remembered.has(a.id))unlocked=true;
+  if(rankIds.includes(a.id)&&a.check(metrics))remembered.add(a.id);
+  const card=document.createElement("article");card.className="achievement-card"+(unlocked?" unlocked":"");
+  const icon=document.createElement("div");icon.className="achievement-icon";icon.textContent=a.icon;
+  const title=document.createElement("div");title.className="achievement-title";title.textContent=a.name;
+  const desc=document.createElement("div");desc.className="achievement-desc";desc.textContent=a.desc;
+  const status=document.createElement("div");status.className="achievement-status";status.textContent=unlocked?"✓ Unlocked":(a.progress?a.progress(metrics):"Not unlocked yet");
+  card.append(icon,title,desc,status);root.append(card);
+ }
+ rememberRankAchievements(remembered);
+}
+$("refreshProgressBtn").addEventListener("click",async()=>{
+ if(!user){notice("questNotice","Sign in to refresh your progress.");return;}
+ const button=$("refreshProgressBtn");button.disabled=true;button.textContent="Refreshing…";
+ try{await loadGamificationData();notice("questNotice","Verified recycling and reward history refreshed.","success");}
+ catch(e){notice("questNotice","Could not refresh progress: "+errorText(e),"error");}
+ finally{button.disabled=false;button.textContent="Refresh";}
+});
+
 function renderStats(){
  const points=user?fmt(userData?.points):"—",visits=user?fmt(userData?.visits):"—";
  $("pointsValue").textContent=points;$("visitsValue").textContent=visits;
@@ -646,7 +892,7 @@ function startLeaderboard(){
  if(!user)return;
  unsubscribe=onSnapshot(query(collection(db,"users"),orderBy("points","desc"),limit(50)),snap=>{
   leaderRows=snap.docs.map(d=>({id:d.id,...d.data()}));
-  renderLeaderboard();renderStats();clearNotice("leaderNotice");
+  renderLeaderboard();renderStats();renderAchievements();clearNotice("leaderNotice");
  },e=>notice("leaderNotice","Leaderboard error: "+errorText(e),"error"));
 }
 
@@ -701,10 +947,10 @@ onAuthStateChanged(auth,async u=>{
  $("headerAccount").textContent=u?"My account":"Sign in";
  if(u){
   $("statusDot").classList.add("online");$("statusText").textContent="Signed in";
-  try{await refreshProfile();startLeaderboard();$("welcomeText").textContent="Welcome back, "+(userData.displayName||"member")+". Keep up your recycling progress.";}
+  try{await refreshProfile();startLeaderboard();await loadGamificationData();$("welcomeText").textContent="Welcome back, "+(userData.displayName||"member")+". Keep up your recycling progress.";}
   catch(e){notice("profileNotice",errorText(e),"error");}
  }else{
-  userData=null;leaderRows=[];
+  userData=null;leaderRows=[];recyclingHistory=[];redemptionHistory=[];gamificationLoaded=false;renderDailyQuests();renderAchievements();
   $("statusDot").classList.remove("online");$("statusText").textContent="Not signed in";
   if(unsubscribe){unsubscribe();unsubscribe=null;}
   renderStats();renderLeaderboard();
@@ -716,6 +962,8 @@ window.addEventListener("offline",()=>{$("statusText").textContent="Offline";$("
 
 renderRewards();
 renderStats();
+renderDailyQuests();
+renderAchievements();
 </script>
 </body>
 </html>
