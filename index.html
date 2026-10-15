@@ -314,7 +314,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
         <section class="panel">
           <h2>About WasteLess</h2>
           <p class="sub">WasteLess encourages sustainable habits by rewarding verified contributions. Collect points and redeem available rewards.</p>
-          <p class="note">Points and redemptions must be processed by trusted server functions. Never trust a browser-only points balance.</p>
+          <p class="note">This version uses Firestore transactions directly from the browser. For real-value rewards, configure trusted server-side validation and restrictive Firestore rules.</p>
         </section>
       </div>
     </div>
@@ -325,9 +325,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
 </div>
 
 <script type="module">
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
 import {
   getAuth,
@@ -349,16 +347,12 @@ import {
   orderBy,
   limit,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  runTransaction
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-import {
-  getFunctions,
-  httpsCallable
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-functions.js";
-
 const firebaseConfig = {
-  apiKey: "AIzaSyCVfxa0DOThWiLc6PaL8nZGje6GB0n-C_g",
+  apiKey: "AIzaSyCVfxa0DOThWiLc6Pa8LzZGje6GB0n-C_g",
   authDomain: "wasteless-7d8eb.firebaseapp.com",
   projectId: "wasteless-7d8eb",
   storageBucket: "wasteless-7d8eb.firebasestorage.app",
@@ -369,10 +363,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const functions = getFunctions(app, "us-central1");
-
-// Reward redemption remains connected to your server function.
-const redeemReward = httpsCallable(functions, "redeemReward");
 
 const $ = id => document.getElementById(id);
 
@@ -399,7 +389,6 @@ function applyTheme(theme, save = true) {
 
   $("themeStatus").textContent = `${themeNames[theme]} theme selected.`;
 
-  $("theme-color");
   document.querySelector('meta[name="theme-color"]').content = {
     light: "#f7f8f6",
     dark: "#151a17",
@@ -421,11 +410,9 @@ document.querySelectorAll("[data-theme-choice]").forEach(button => {
 });
 
 let initialTheme = "light";
-
 try {
   initialTheme = localStorage.getItem("wasteless-theme") || "light";
 } catch (e) {}
-
 applyTheme(initialTheme, false);
 
 let user = null;
@@ -434,160 +421,43 @@ let leaderRows = [];
 let unsubscribe = null;
 
 const rewards = [
-  {
-    id: "reusable-bottle",
-    name: "Reusable Bottle",
-    desc: "A bottle for everyday hydration.",
-    cost: 300,
-    icon: "bottle"
-  },
-  {
-    id: "reusable-bag",
-    name: "Reusable Tote Bag",
-    desc: "Carry shopping without disposable bags.",
-    cost: 200,
-    icon: "bag"
-  },
-  {
-    id: "reusable-cup",
-    name: "Reusable Cup",
-    desc: "Bring your own cup for drinks.",
-    cost: 250,
-    icon: "cup"
-  },
-  {
-    id: "wireless-mouse",
-    name: "Wireless Mouse",
-    desc: "A practical computer accessory.",
-    cost: 1200,
-    icon: "mouse"
-  },
-  {
-    id: "mechanical-keyboard",
-    name: "Mechanical Keyboard",
-    desc: "An upgrade for your desk setup.",
-    cost: 3500,
-    icon: "keyboard"
-  },
-  {
-    id: "headphones",
-    name: "Wireless Headphones",
-    desc: "Listen to music and audio on the go.",
-    cost: 2800,
-    icon: "headphones"
-  },
-  {
-    id: "usb-cable",
-    name: "USB-C Cable",
-    desc: "A cable for compatible devices.",
-    cost: 500,
-    icon: "cable"
-  },
-  {
-    id: "lunchbox",
-    name: "Reusable Lunchbox",
-    desc: "Pack meals in a reusable container.",
-    cost: 700,
-    icon: "lunchbox"
-  },
-  {
-    id: "desk-lamp",
-    name: "LED Desk Lamp",
-    desc: "A useful addition to your study desk.",
-    cost: 1800,
-    icon: "lamp"
-  },
-  {
-    id: "plant-kit",
-    name: "Mini Plant Kit",
-    desc: "Grow a little greenery at home.",
-    cost: 600,
-    icon: "plant"
-  },
-  {
-    id: "notebook",
-    name: "Recycled Notebook",
-    desc: "A notebook made with recycled paper.",
-    cost: 350,
-    icon: "notebook"
-  },
-  {
-    id: "gift-voucher",
-    name: "Eco Reward Voucher",
-    desc: "A voucher from a participating shop.",
-    cost: 2000,
-    icon: "voucher"
-  }
+  {id:"reusable-bottle",name:"Reusable Bottle",desc:"A bottle for everyday hydration.",cost:300,icon:"bottle"},
+  {id:"reusable-bag",name:"Reusable Tote Bag",desc:"Carry shopping without disposable bags.",cost:200,icon:"bag"},
+  {id:"reusable-cup",name:"Reusable Cup",desc:"Bring your own cup for drinks.",cost:250,icon:"cup"},
+  {id:"wireless-mouse",name:"Wireless Mouse",desc:"A practical computer accessory.",cost:1200,icon:"mouse"},
+  {id:"mechanical-keyboard",name:"Mechanical Keyboard",desc:"An upgrade for your desk setup.",cost:3500,icon:"keyboard"},
+  {id:"headphones",name:"Wireless Headphones",desc:"Listen to music and audio on the go.",cost:2800,icon:"headphones"},
+  {id:"usb-cable",name:"USB-C Cable",desc:"A cable for compatible devices.",cost:500,icon:"cable"},
+  {id:"lunchbox",name:"Reusable Lunchbox",desc:"Pack meals in a reusable container.",cost:700,icon:"lunchbox"},
+  {id:"desk-lamp",name:"LED Desk Lamp",desc:"A useful addition to your study desk.",cost:1800,icon:"lamp"},
+  {id:"plant-kit",name:"Mini Plant Kit",desc:"Grow a little greenery at home.",cost:600,icon:"plant"},
+  {id:"notebook",name:"Recycled Notebook",desc:"A notebook made with recycled paper.",cost:350,icon:"notebook"},
+  {id:"gift-voucher",name:"Eco Reward Voucher",desc:"A voucher from a participating shop.",cost:2000,icon:"voucher"}
 ];
 
 const icons = {
-  theme:
-    '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z"/>',
-
-  leaf:
-    '<path d="M20 4c-9 0-15 4-15 11a5 5 0 0 0 5 5c7 0 11-7 10-16Z"/><path d="M4 21c3-6 7-9 12-12"/>',
-
-  dashboard:
-    '<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/>',
-
-  rewards:
-    '<path d="M20 12v9H4v-9M2 7h20v5H2zM12 7v14"/><path d="M12 7H7.5a2.5 2.5 0 1 1 2.5-2.5C10 6 12 7 12 7ZM12 7h4.5A2.5 2.5 0 1 0 14 4.5C14 6 12 7 12 7Z"/>',
-
-  leaderboard:
-    '<path d="M4 19V9M10 19V4M16 19v-7M22 19H2"/>',
-
-  account:
-    '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
-
-  bottle:
-    '<path d="M9 3h6v3l2 2v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8l2-2V3Z"/><path d="M9 6h6M7 12h10"/>',
-
-  bag:
-    '<path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
-
-  cup:
-    '<path d="M5 4h14l-2 16H7L5 4Z"/><path d="M7 9h10"/>',
-
-  mouse:
-    '<rect x="5" y="2" width="14" height="20" rx="7"/><path d="M12 2v7"/>',
-
-  keyboard:
-    '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M5 9h.01M8 9h.01M11 9h.01M14 9h.01M17 9h.01M19 9h.01M5 12h.01M8 12h.01M11 12h.01M14 12h.01M17 12h.01M7 15h10"/>',
-
-  headphones:
-    '<path d="M3 13v-2a9 9 0 0 1 18 0v2"/><rect x="3" y="12" width="5" height="8" rx="2"/><rect x="16" y="12" width="5" height="8" rx="2"/>',
-
-  cable:
-    '<path d="M8 3v5a4 4 0 0 0 8 0V6M6 3h4M14 3h4v3h-4M12 12v3a4 4 0 0 0 4 4h2"/>',
-
-  lunchbox:
-    '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V5h8v3M3 12h18"/>',
-
-  lamp:
-    '<path d="M9 20h6M12 16v4M7 3h10l3 9H4l3-9Z"/><path d="m9 12 3 4 3-4"/>',
-
-  plant:
-    '<path d="M12 20v-9M12 14C4 14 4 7 4 7s8-1 8 7ZM12 11c0-7 8-7 8-7s0 7-8 7ZM6 21h12"/>',
-
-  notebook:
-    '<rect x="5" y="3" width="15" height="18" rx="2"/><path d="M9 3v18M12 8h5M12 12h5M12 16h4M3 7h2M3 11h2M3 15h2"/>',
-
-  voucher:
-    '<path d="M3 6h18v4a2 2 0 0 0 0 4v4H3v-4a2 2 0 0 0 0-4V6Z"/><path d="m13 8-4 8"/>'
+  theme:'<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z"/>',
+  leaf:'<path d="M20 4c-9 0-15 4-15 11a5 5 0 0 0 5 5c7 0 11-7 10-16Z"/><path d="M4 21c3-6 7-9 12-12"/>',
+  dashboard:'<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/>',
+  rewards:'<path d="M20 12v9H4v-9M2 7h20v5H2zM12 7v14"/><path d="M12 7H7.5a2.5 2.5 0 1 1 2.5-2.5C10 6 12 7 12 7ZM12 7h4.5A2.5 2.5 0 1 0 14 4.5C14 6 12 7 12 7Z"/>',
+  leaderboard:'<path d="M4 19V9M10 19V4M16 19v-7M22 19H2"/>',
+  account:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  bottle:'<path d="M9 3h6v3l2 2v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8l2-2V3Z"/><path d="M9 6h6M7 12h10"/>',
+  bag:'<path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+  cup:'<path d="M5 4h14l-2 16H7L5 4Z"/><path d="M7 9h10"/>',
+  mouse:'<rect x="5" y="2" width="14" height="20" rx="7"/><path d="M12 2v7"/>',
+  keyboard:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M5 9h.01M8 9h.01M11 9h.01M14 9h.01M17 9h.01M19 9h.01M5 12h.01M8 12h.01M11 12h.01M14 12h.01M17 12h.01M7 15h10"/>',
+  headphones:'<path d="M3 13v-2a9 9 0 0 1 18 0v2"/><rect x="3" y="12" width="5" height="8" rx="2"/><rect x="16" y="12" width="5" height="8" rx="2"/>',
+  cable:'<path d="M8 3v5a4 4 0 0 0 8 0V6M6 3h4M14 3h4v3h-4M12 12v3a4 4 0 0 0 4 4h2"/>',
+  lunchbox:'<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V5h8v3M3 12h18"/>',
+  lamp:'<path d="M9 20h6M12 16v4M7 3h10l3 9H4l3-9Z"/><path d="m9 12 3 4 3-4"/>',
+  plant:'<path d="M12 20v-9M12 14C4 14 4 7 4 7s8-1 8 7ZM12 11c0-7 8-7 8-7s0 7-8 7ZM6 21h12"/>',
+  notebook:'<rect x="5" y="3" width="15" height="18" rx="2"/><path d="M9 3v18M12 8h5M12 12h5M12 16h4M3 7h2M3 11h2M3 15h2"/>',
+  voucher:'<path d="M3 6h18v4a2 2 0 0 0 0 4v4H3v-4a2 2 0 0 0 0-4V6Z"/><path d="m13 8-4 8"/>'
 };
 
 function svg(type) {
-  return `
-    <svg viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.7"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true">
-      ${icons[type] || icons.leaf}
-    </svg>
-  `;
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[type] || icons.leaf}</svg>`;
 }
 
 function notice(id, message, type = "info") {
@@ -607,34 +477,20 @@ function fmt(value) {
 
 function errorText(error) {
   const known = {
-    "auth/email-already-in-use":
-      "That email already has an account.",
-    "auth/invalid-email":
-      "Enter a valid email address.",
-    "auth/weak-password":
-      "Use a password with at least 6 characters.",
-    "auth/invalid-credential":
-      "Email or password is incorrect.",
-    "permission-denied":
-      "Permission denied. Check your Firestore security rules.",
-    "functions/not-found":
-      "The required Cloud Function has not been deployed.",
-    "functions/unavailable":
-      "The server function is unavailable."
+    "auth/email-already-in-use": "That email already has an account.",
+    "auth/invalid-email": "Enter a valid email address.",
+    "auth/weak-password": "Use a password with at least 6 characters.",
+    "auth/invalid-credential": "Email or password is incorrect.",
+    "permission-denied": "Permission denied. Check your Firestore security rules."
   };
-
-  return known[error?.code] ||
-    error?.message ||
-    "Something went wrong. Please try again.";
+  return known[error?.code] || error?.message || "Something went wrong. Please try again.";
 }
 
 function validateName(value) {
   const name = String(value || "").trim();
-
   if (name.length < 1 || name.length > 30) {
     throw Error("Display names must be 1–30 characters.");
   }
-
   return name;
 }
 
@@ -648,34 +504,17 @@ function setTab(name) {
   });
 
   const titles = {
-    dashboard: [
-      "A little less waste.<br>A better tomorrow.",
-      "Collect points, redeem rewards, and make a difference."
-    ],
-    rewards: [
-      "Good choices. Great rewards.",
-      "Use your available points to redeem useful items."
-    ],
-    leaderboard: [
-      "Progress, together.",
-      "See how the WasteLess community is doing."
-    ],
-    account: [
-      "Your WasteLess account.",
-      "Manage your profile and track your contributions."
-    ]
+    dashboard: ["A little less waste.<br>A better tomorrow.", "Collect points, redeem rewards, and make a difference."],
+    rewards: ["Good choices. Great rewards.", "Use your available points to redeem useful items."],
+    leaderboard: ["Progress, together.", "See how the WasteLess community is doing."],
+    account: ["Your WasteLess account.", "Manage your profile and track your contributions."]
   };
 
   $("heroTitle").innerHTML = titles[name][0];
   $("heroDescription").textContent = titles[name][1];
 
-  if (name === "leaderboard") {
-    renderLeaderboard();
-  }
-
-  if (name === "account" && !user) {
-    $("email").focus();
-  }
+  if (name === "leaderboard") renderLeaderboard();
+  if (name === "account" && !user) $("email").focus();
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -689,7 +528,6 @@ const tabLabels = {
 
 document.querySelectorAll(".tab").forEach(button => {
   const [icon, label] = tabLabels[button.dataset.tab];
-
   button.innerHTML = svg(icon) + `<span>${label}</span>`;
   button.addEventListener("click", () => setTab(button.dataset.tab));
 });
@@ -761,6 +599,15 @@ function renderRewards() {
   $("featuredReward").replaceChildren(art, title, desc);
 }
 
+/*
+ * REDEMPTION CHANGE:
+ * No Firebase Functions.
+ * Deducts points and writes a redemption document in one Firestore transaction.
+ *
+ * NOTE: The reward prices are currently stored in this client-side array.
+ * This implementation is not secure against a malicious client unless your
+ * Firestore rules independently enforce valid balance changes and prices.
+ */
 async function redeem(reward, button) {
   clearNotice("rewardNotice");
 
@@ -770,9 +617,7 @@ async function redeem(reward, button) {
     return;
   }
 
-  if (!confirm(
-    `Redeem ${reward.name} for ${fmt(reward.cost)} points?`
-  )) {
+  if (!confirm(`Redeem ${reward.name} for ${fmt(reward.cost)} points?`)) {
     return;
   }
 
@@ -780,24 +625,62 @@ async function redeem(reward, button) {
   button.textContent = "Processing…";
 
   try {
-    // The server must check the actual price, balance and stock.
-    const result = await redeemReward({
-      rewardId: reward.id
+    const userRef = doc(db, "users", user.uid);
+    const redemptionRef = doc(collection(db, "redemptions"));
+
+    // Capture the signed-in identity before starting the transaction.
+    const memberId = user.uid;
+    const memberEmail = user.email || "";
+    const rewardCost = Number(reward.cost);
+
+    if (!Number.isFinite(rewardCost) || rewardCost <= 0) {
+      throw new Error("This reward has an invalid points cost.");
+    }
+
+    await runTransaction(db, async transaction => {
+      const userSnapshot = await transaction.get(userRef);
+
+      if (!userSnapshot.exists()) {
+        throw new Error("Your user profile was not found.");
+      }
+
+      const data = userSnapshot.data();
+      const currentPoints = Number(data.points ?? 0);
+
+      if (!Number.isFinite(currentPoints) || currentPoints < rewardCost) {
+        throw new Error("You do not have enough points.");
+      }
+
+      // Both writes commit together or neither write commits.
+      transaction.update(userRef, {
+        points: currentPoints - rewardCost
+      });
+
+      transaction.set(redemptionRef, {
+        userId: memberId,
+        email: memberEmail,
+        displayName: data.displayName || user.displayName || "WasteLess Member",
+        rewardId: String(reward.id),
+        rewardName: String(reward.name),
+        pointsCost: rewardCost,
+        status: "pending",
+        createdAt: serverTimestamp()
+      });
     });
 
+    // Refresh the local display after Firestore confirms the transaction.
+    await refreshProfile();
+
     notice(
       "rewardNotice",
-      result?.data?.message || "Redemption request submitted.",
+      `Success! ${reward.name} was redeemed and ${fmt(rewardCost)} points were deducted. Your redemption is pending fulfilment.`,
       "success"
     );
-
-    await refreshProfile();
   } catch (error) {
-    notice(
-      "rewardNotice",
-      "Redemption failed: " + errorText(error),
-      "error"
-    );
+    console.error("Redemption failed:", error);
+
+    const message = error?.message || "Please try again.";
+    notice("rewardNotice", "Redemption failed: " + message, "error");
   } finally {
     button.disabled = false;
     button.textContent = "Redeem";
@@ -814,10 +697,7 @@ function renderStats() {
   $("accountPoints").textContent = points;
   $("accountVisits").textContent = visits;
 
-  const index = user
-    ? leaderRows.findIndex(row => row.id === user.uid)
-    : -1;
-
+  const index = user ? leaderRows.findIndex(row => row.id === user.uid) : -1;
   const rank = index < 0 ? "—" : "#" + (index + 1);
 
   $("rankValue").textContent = rank;
@@ -858,18 +738,14 @@ function renderLeaderboard() {
 
     const avatar = document.createElement("div");
     avatar.className = "avatar";
-    avatar.textContent = (member.displayName || "W")
-      .trim()
-      .charAt(0)
-      .toUpperCase();
+    avatar.textContent = (member.displayName || "W").trim().charAt(0).toUpperCase();
 
     const info = document.createElement("div");
     info.className = "leader-info";
 
     const name = document.createElement("div");
     name.className = "leader-name";
-    name.textContent =
-      (member.displayName || "WasteLess Member") +
+    name.textContent = (member.displayName || "WasteLess Member") +
       (member.id === user.uid ? " (You)" : "");
 
     const meta = document.createElement("div");
@@ -886,17 +762,13 @@ function renderLeaderboard() {
   });
 }
 
-// Creates a new member document with an email field.
-// Also attempts to backfill the email field on existing documents.
 async function ensureUserDoc(currentUser, name) {
   const ref = doc(db, "users", currentUser.uid);
   const snap = await getDoc(ref);
   const email = (currentUser.email || "").trim();
 
   if (!snap.exists()) {
-    const displayName = validateName(
-      name || currentUser.displayName || "WasteLess Member"
-    );
+    const displayName = validateName(name || currentUser.displayName || "WasteLess Member");
 
     const newUserData = {
       displayName,
@@ -908,12 +780,7 @@ async function ensureUserDoc(currentUser, name) {
 
     await setDoc(ref, newUserData);
 
-    return {
-      displayName,
-      email,
-      points: 0,
-      visits: 0
-    };
+    return { displayName, email, points: 0, visits: 0 };
   }
 
   const data = snap.data();
@@ -922,17 +789,12 @@ async function ensureUserDoc(currentUser, name) {
     try {
       await updateDoc(ref, { email });
     } catch (error) {
-      // The app can still load if the current Firestore rules
-      // do not permit email backfilling.
       console.warn("Could not update member email field:", error);
     }
   }
 
   return {
-    displayName:
-      data.displayName ||
-      currentUser.displayName ||
-      "WasteLess Member",
+    displayName: data.displayName || currentUser.displayName || "WasteLess Member",
     email: email || data.email || "",
     points: Number(data.points || 0),
     visits: Number(data.visits || 0)
@@ -982,11 +844,7 @@ function startLeaderboard() {
       clearNotice("leaderNotice");
     },
     error => {
-      notice(
-        "leaderNotice",
-        "Leaderboard error: " + errorText(error),
-        "error"
-      );
+      notice("leaderNotice", "Leaderboard error: " + errorText(error), "error");
     }
   );
 }
@@ -1018,7 +876,6 @@ $("signUpBtn").addEventListener("click", async () => {
   clearNotice("authNotice");
 
   let name;
-
   try {
     name = validateName($("displayName").value);
   } catch (error) {
@@ -1041,10 +898,7 @@ $("signUpBtn").addEventListener("click", async () => {
       $("password").value
     );
 
-    await updateProfile(credential.user, {
-      displayName: name
-    });
-
+    await updateProfile(credential.user, { displayName: name });
     await ensureUserDoc(credential.user, name);
 
     notice("authNotice", "Account created successfully.", "success");
@@ -1063,7 +917,6 @@ $("profileForm").addEventListener("submit", async event => {
   if (!user) return;
 
   let name;
-
   try {
     name = validateName($("newDisplayName").value);
   } catch (error) {
@@ -1072,19 +925,10 @@ $("profileForm").addEventListener("submit", async event => {
   }
 
   try {
-    await updateDoc(doc(db, "users", user.uid), {
-      displayName: name
-    });
+    await updateDoc(doc(db, "users", user.uid), { displayName: name });
+    await updateProfile(user, { displayName: name });
 
-    await updateProfile(user, {
-      displayName: name
-    });
-
-    userData = {
-      ...userData,
-      displayName: name
-    };
-
+    userData = { ...userData, displayName: name };
     $("accountName").textContent = name;
 
     notice("profileNotice", "Display name updated.", "success");
@@ -1101,9 +945,7 @@ $("signOutBtn").addEventListener("click", async () => {
   }
 });
 
-$("headerAccount").addEventListener("click", () => {
-  setTab("account");
-});
+$("headerAccount").addEventListener("click", () => setTab("account"));
 
 onAuthStateChanged(auth, async currentUser => {
   user = currentUser;
@@ -1121,8 +963,7 @@ onAuthStateChanged(auth, async currentUser => {
       startLeaderboard();
 
       $("welcomeText").textContent =
-        "Welcome back, " +
-        (userData.displayName || "member") +
+        "Welcome back, " + (userData.displayName || "member") +
         ". Keep up your sustainability progress.";
     } catch (error) {
       notice("profileNotice", errorText(error), "error");
