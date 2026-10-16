@@ -730,22 +730,35 @@ function renderCart(){
   row.append(info,controls,line);root.append(row);
  }
 }
+let checkoutInProgress = false;
+
 async function checkout(){
+ if(checkoutInProgress) return;
  clearNotice("rewardNotice");
  if(!user){notice("rewardNotice","Sign in before checking out.");setTab("account");return;}
  const entries=cartEntries();
  if(!entries.length){notice("rewardNotice","Your cart is empty.");return;}
  const total=cartTotal();
+ if(!Number.isFinite(total)||total<=0){notice("rewardNotice","Your cart total is invalid.","error");return;}
  const orderSummary=entries.map(({reward,quantity})=>`${reward.name} × ${quantity}`).join(", ");
  if(!confirm(`Check out ${entries.reduce((sum,item)=>sum+item.quantity,0)} item(s) for ${fmt(total)} points?\n\n${orderSummary}\n\nNo real money will be charged.`))return;
- const button=$("checkoutBtn");button.disabled=true;button.textContent="Checking out…";
+ const button=$("checkoutBtn");
+ checkoutInProgress=true;
+ button.disabled=true;
+ button.textContent="Checking out…";
  try{
-  const userRef=doc(db,"users",user.uid);
+  const checkoutUser=user;
+  const userRef=doc(db,"users",checkoutUser.uid);
   const redemptionRef=doc(collection(db,"redemptions"));
   const entriesForRecord=entries.map(({reward,quantity})=>({
-   rewardId:reward.id,rewardName:reward.name,quantity,
-   pointsEach:reward.cost,subtotal:reward.cost*quantity
+   rewardId:reward.id,
+   rewardName:reward.name,
+   quantity,
+   pointsEach:reward.cost,
+   subtotal:reward.cost*quantity
   }));
+
+  // Points deduction and redemption creation commit together.
   await runTransaction(db,async transaction=>{
    const userSnap=await transaction.get(userRef);
    if(!userSnap.exists())throw new Error("Your member account could not be found.");
@@ -753,11 +766,17 @@ async function checkout(){
    const currentPoints=Number(data.points??0);
    if(!Number.isFinite(currentPoints)||currentPoints<0)throw new Error("Your points balance is invalid.");
    if(currentPoints<total)throw new Error(`Not enough points. Your cart costs ${fmt(total)} points, but you have ${fmt(currentPoints)}.`);
-   transaction.update(userRef,{points:currentPoints-total});
+
+   // Required by the Firestore rules to link the balance change to this order.
+   transaction.update(userRef,{
+    points:currentPoints-total,
+    lastRedemptionId:redemptionRef.id
+   });
+
    transaction.set(redemptionRef,{
-    userId:user.uid,
-    email:user.email||"",
-    displayName:data.displayName||user.displayName||"WasteLess Member",
+    userId:checkoutUser.uid,
+    email:checkoutUser.email||"",
+    displayName:data.displayName||checkoutUser.displayName||"WasteLess Member",
     rewardId:"cart-checkout",
     rewardName:orderSummary,
     items:entriesForRecord,
@@ -766,10 +785,19 @@ async function checkout(){
     createdAt:serverTimestamp()
    });
   });
+
+  // The transaction has succeeded, so clear the cart now.
   cart.clear();
-  await refreshProfile();
-  await loadGamificationData();
   renderCart();
+
+  // Refresh failures must not make a successful checkout look like a failed one.
+  try{
+   await refreshProfile();
+   await loadGamificationData();
+  }catch(refreshError){
+   console.warn("Checkout succeeded, but refreshing member data failed:",refreshError);
+  }
+
   notice("rewardNotice",`Checkout successful! ${fmt(total)} points deducted. Your order is pending fulfilment.`,"success");
  }catch(e){
   console.error("WasteLess checkout error:",e);
@@ -777,6 +805,7 @@ async function checkout(){
   notice("rewardNotice","Checkout failed: "+message,"error");
   alert("Checkout Failed\n\n"+message);
  }finally{
+  checkoutInProgress=false;
   button.disabled=!cartEntries().length;
   button.textContent="Checkout";
  }
