@@ -429,6 +429,18 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
   <section class="page" id="page-achievements">
     <section class="panel">
       <div class="panel-head"><div><h2>Lifetime achievements</h2><p class="sub">Milestones stay with your account.</p></div></div>
+      <div class="panel" style="background:var(--soft);margin-bottom:16px;padding:16px">
+        <h2 style="font-size:14px">Leaderboard badge</h2>
+        <p class="sub">Choose an achievement you have unlocked to display beside your name.</p>
+        <div class="field" style="margin-top:13px;margin-bottom:8px">
+          <label for="displayAchievementSelect">Displayed achievement</label>
+          <select id="displayAchievementSelect" style="width:100%;border:1px solid var(--line);background:var(--input-bg);border-radius:10px;padding:12px;color:var(--text);font:inherit">
+            <option value="">No achievement badge</option>
+          </select>
+        </div>
+        <button class="btn" id="saveAchievementBadgeBtn" type="button">Save badge</button>
+        <div id="achievementBadgeNotice" class="notice" role="status" aria-live="polite"></div>
+      </div>
       <div id="achievements" class="achievement-grid"><div class="empty">Sign in to view achievements.</div></div>
       <p class="note">Rank achievements unlock when your current leaderboard rank reaches the milestone and are remembered in this browser.</p>
     </section>
@@ -862,9 +874,38 @@ function renderDailyQuests(){
   foot.append(count,status);card.append(top,track,foot);root.append(card);
  }
 }
+let unlockedAchievementIds = new Set();
+function renderAchievementBadgePicker(){
+ const select=$("displayAchievementSelect");
+ if(!select)return;
+ const previous=userData?.displayAchievement||"";
+ select.replaceChildren();
+ const none=document.createElement("option");none.value="";none.textContent="No achievement badge";select.append(none);
+ for(const a of achievementList){
+  if(!unlockedAchievementIds.has(a.id))continue;
+  const option=document.createElement("option");option.value=a.id;option.textContent=`${a.icon} ${a.name}`;select.append(option);
+ }
+ select.value=unlockedAchievementIds.has(previous)?previous:"";
+ $("saveAchievementBadgeBtn").disabled=!user;
+}
+$("saveAchievementBadgeBtn").addEventListener("click",async()=>{
+ if(!user){notice("achievementBadgeNotice","Sign in to choose a badge.","error");return;}
+ const button=$("saveAchievementBadgeBtn");button.disabled=true;
+ try{
+  const selected=$("displayAchievementSelect").value;
+  if(selected&&!unlockedAchievementIds.has(selected))throw new Error("You can only display an achievement you have unlocked.");
+  await updateDoc(doc(db,"users",user.uid),{displayAchievement:selected});
+  userData={...userData,displayAchievement:selected};
+  renderLeaderboard();
+  notice("achievementBadgeNotice",selected?"Leaderboard badge saved.":"Leaderboard badge removed.","success");
+ }catch(e){
+  console.error("Saving achievement badge failed:",e);
+  notice("achievementBadgeNotice","Could not save badge: "+errorText(e)+". Check that your Firestore rules allow the owner to update only displayAchievement.","error");
+ }finally{button.disabled=!user;}
+});
 function renderAchievements(){
  const root=$("achievements");root.replaceChildren();
- if(!user){root.innerHTML='<div class="empty">Sign in to view achievements.</div>';return;}
+ if(!user){unlockedAchievementIds=new Set();renderAchievementBadgePicker();root.innerHTML='<div class="empty">Sign in to view achievements.</div>';return;}
  if(!gamificationLoaded){root.innerHTML='<div class="empty">Loading your lifetime achievements…</div>';return;}
  const kg=recyclingHistory.reduce((sum,r)=>sum+Math.max(0,Number(r.massKg)||0),0);
  const purchases=redemptionHistory.reduce((sum,r)=>sum+(Array.isArray(r.items)?r.items.reduce((n,item)=>n+Math.max(0,Number(item.quantity)||0),0):Math.max(0,Number(r.quantity)||1)),0);
@@ -873,10 +914,12 @@ function renderAchievements(){
  const metrics={records:recyclingHistory.length,kg,purchases,spent,rank};
  const remembered=rememberedRankAchievements();
  const rankIds=["master","legend","unrivaled"];
+ unlockedAchievementIds=new Set();
  for(const a of achievementList){
   let unlocked=a.check(metrics);
   if(rankIds.includes(a.id)&&remembered.has(a.id))unlocked=true;
   if(rankIds.includes(a.id)&&a.check(metrics))remembered.add(a.id);
+  if(unlocked)unlockedAchievementIds.add(a.id);
   const card=document.createElement("article");card.className="achievement-card"+(unlocked?" unlocked":"");
   const icon=document.createElement("div");icon.className="achievement-icon";icon.textContent=a.icon;
   const title=document.createElement("div");title.className="achievement-title";title.textContent=a.name;
@@ -885,6 +928,7 @@ function renderAchievements(){
   card.append(icon,title,desc,status);root.append(card);
  }
  rememberRankAchievements(remembered);
+ renderAchievementBadgePicker();
 }
 $("refreshProgressBtn").addEventListener("click",async()=>{
  if(!user){notice("questNotice","Sign in to refresh your progress.");return;}
@@ -917,6 +961,14 @@ function renderLeaderboard(){
   const info=document.createElement("div");info.className="leader-info";
   const name=document.createElement("div");name.className="leader-name";
   name.textContent=(m.displayName||"WasteLess Member")+(m.id===user.uid?" (You)":"");
+  const badgeData=achievementList.find(a=>a.id===m.displayAchievement);
+  if(badgeData){
+   const badge=document.createElement("span");badge.className="leader-achievement-badge";
+   badge.textContent=` ${badgeData.icon} ${badgeData.name}`;
+   badge.title=`${badgeData.name} achievement`;
+   badge.style.cssText="display:inline-flex;align-items:center;gap:4px;margin-left:7px;padding:3px 7px;border-radius:7px;background:var(--light);color:var(--green);font-size:10px;font-weight:750;vertical-align:middle;white-space:normal";
+   name.append(badge);
+  }
   const meta=document.createElement("div");meta.className="leader-meta";meta.textContent=fmt(m.visits)+" verified actions";
   const points=document.createElement("div");points.className="leader-points";points.textContent=fmt(m.points)+" pts";
   info.append(name,meta);row.append(rank,avatar,info,points);root.append(row);
@@ -927,10 +979,10 @@ async function ensureUserDoc(u,name){
  if(!snap.exists()){
   const n=validateName(name||u.displayName||"WasteLess Member");
   await setDoc(ref,{displayName:n,points:0,visits:0,createdAt:serverTimestamp()});
-  return {displayName:n,points:0,visits:0};
+  return {displayName:n,points:0,visits:0,displayAchievement:""};
  }
  const d=snap.data();
- return {displayName:d.displayName||u.displayName||"WasteLess Member",points:Number(d.points||0),visits:Number(d.visits||0)};
+ return {displayName:d.displayName||u.displayName||"WasteLess Member",points:Number(d.points||0),visits:Number(d.visits||0),displayAchievement:typeof d.displayAchievement==="string"?d.displayAchievement:""};
 }
 async function refreshProfile(){
  if(!user)return;
