@@ -422,7 +422,7 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
       </div>
       <div id="dailyQuests" class="quest-list"><div class="empty">Sign in to see today's quests.</div></div>
       <div id="questNotice" class="notice" role="status" aria-live="polite"></div>
-      <p class="note">Quest progress counts verified recycling records by material type, not individual items. Daily quests rotate at midnight Singapore time. Quest points are shown as rewards, but your current Firestore rules must explicitly allow secure quest claims before they can be added to your balance.</p>
+      <p class="note">Choose 3 of 5 quests each Singapore day. Progress resets at midnight Singapore time and counts verified records created that day. Quest points are shown as rewards, but your current Firestore rules must explicitly allow secure quest claims before they can be added to your balance.</p>
     </section>
   </section>
 
@@ -776,9 +776,7 @@ const questPool=[
  {id:"textiles",title:"Recycle 20 textiles",material:"textile",goal:20,reward:15,description:"20 verified textile recycling records"},
  {id:"cardboard",title:"Recycle 30 cardboards",material:"paper",goal:30,reward:20,description:"30 verified paper recycling records"},
  {id:"glass",title:"Recycle 5 glass items",material:"glass",goal:5,reward:25,description:"5 verified glass recycling records"},
- {id:"ewaste",title:"Recycle 1 e-waste item",material:"ewaste",goal:1,reward:30,description:"1 verified e-waste recycling record"},
- {id:"metal",title:"Recycle 3 metal items",material:"metal",goal:3,reward:15,description:"3 verified metal recycling records"},
- {id:"mixed",title:"Complete 5 recycling actions",material:"any",goal:5,reward:10,description:"5 verified recycling records of any material"}
+ {id:"ewaste",title:"Recycle 1 e-waste item",material:"ewaste",goal:1,reward:30,description:"1 verified e-waste recycling record"}
 ];
 const achievementList=[
  {id:"first-touch",name:"First Touch",desc:"Recycle through WasteLess for the first time.",icon:"🌱",check:m=>m.records>=1},
@@ -796,11 +794,11 @@ function singaporeDateKey(date=new Date()){
 }
 function dailyQuestSelection(){
  const key=singaporeDateKey();
- // Seeded shuffle: the same set appears for everyone on a given Singapore calendar day.
+ // Stable daily shuffle: exactly 3 of the 5 quests, changing at Singapore midnight.
  let seed=0;for(const ch of key)seed=(seed*31+ch.charCodeAt(0))>>>0;
  const arr=[...questPool];
  for(let i=arr.length-1;i>0;i--){seed=(seed*1664525+1013904223)>>>0;const j=seed%(i+1);[arr[i],arr[j]]=[arr[j],arr[i]];}
- return arr.slice(0,5);
+ return arr.slice(0,3);
 }
 function unlockedStorageKey(){return user?`wasteless-lifetime-rank-achievements-${user.uid}`:"";}
 function rememberedRankAchievements(){
@@ -824,8 +822,22 @@ async function loadGamificationData(){
  renderDailyQuests();renderAchievements();
 }
 function questProgress(quest){
- const relevant=quest.material==="any"?recyclingHistory:recyclingHistory.filter(r=>String(r.material||"").toLowerCase()===quest.material);
- return relevant.length;
+ const today=singaporeDateKey();
+ // Daily progress only counts records created today in Singapore time.
+ const todaysRecords=recyclingHistory.filter(record=>{
+  const raw=record.createdAt||record.timestamp||record.date||record.verifiedAt;
+  if(!raw)return false;
+  let date;
+  try{
+   if(typeof raw.toDate==="function")date=raw.toDate();
+   else if(raw instanceof Date)date=raw;
+   else if(typeof raw==="number")date=new Date(raw<1e12?raw*1000:raw);
+   else date=new Date(raw);
+   if(!Number.isFinite(date.getTime()))return false;
+   return singaporeDateKey(date)===today;
+  }catch(e){return false;}
+ });
+ return todaysRecords.filter(record=>String(record.material||"").toLowerCase()===quest.material).length;
 }
 function renderDailyQuests(){
  const root=$("dailyQuests");root.replaceChildren();
