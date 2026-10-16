@@ -310,6 +310,40 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
   }
 }
 
+/* Consistent spacing on the separate quests and achievements tabs */
+#page-quests .panel,
+#page-achievements .panel {
+  padding: 22px;
+}
+#page-quests .panel-head,
+#page-achievements .panel-head {
+  margin-bottom: 16px;
+  gap: 14px;
+}
+#page-quests .quest-list,
+#page-achievements .achievement-grid {
+  gap: 12px;
+}
+#page-quests .quest-card,
+#page-achievements .achievement-card {
+  padding: 15px;
+}
+@media (max-width: 560px) {
+  #page-quests .panel,
+  #page-achievements .panel {
+    padding: 16px;
+  }
+  #page-quests .panel-head,
+  #page-achievements .panel-head {
+    margin-bottom: 14px;
+    gap: 10px;
+  }
+  #page-quests .quest-card,
+  #page-achievements .achievement-card {
+    padding: 12px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -337,6 +371,8 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
 
   <nav class="tabs" aria-label="Main navigation">
     <button class="tab active" data-tab="dashboard" type="button"></button>
+    <button class="tab" data-tab="quests" type="button"></button>
+    <button class="tab" data-tab="achievements" type="button"></button>
     <button class="tab" data-tab="rewards" type="button"></button>
     <button class="tab" data-tab="leaderboard" type="button"></button>
     <button class="tab" data-tab="account" type="button"></button>
@@ -376,22 +412,26 @@ footer{border-top:1px solid var(--line);margin-top:30px;padding-top:19px;
         </section>
       </div>
     </div>
-    <div class="grid" style="margin-top:18px">
-      <section class="panel">
-        <div class="panel-head">
-          <div><h2>Daily quests</h2><p class="sub" id="questSubtitle">New challenges every day.</p></div>
-          <div class="section-actions"><button class="btn secondary" id="refreshProgressBtn" type="button">Refresh</button></div>
-        </div>
-        <div id="dailyQuests" class="quest-list"><div class="empty">Sign in to see today's quests.</div></div>
-        <div id="questNotice" class="notice" role="status" aria-live="polite"></div>
-        <p class="note">Quest progress counts verified recycling records by material type, not individual items. Daily quests rotate at midnight Singapore time. Quest points are shown as rewards, but your current Firestore rules must explicitly allow secure quest claims before they can be added to your balance.</p>
-      </section>
-      <section class="panel">
-        <div class="panel-head"><div><h2>Lifetime achievements</h2><p class="sub">Milestones stay with your account.</p></div></div>
-        <div id="achievements" class="achievement-grid"><div class="empty">Sign in to view achievements.</div></div>
-        <p class="note">Rank achievements unlock when your current leaderboard rank reaches the milestone and are remembered in this browser.</p>
-      </section>
-    </div>
+  </section>
+
+  <section class="page" id="page-quests">
+    <section class="panel">
+      <div class="panel-head">
+        <div><h2>Daily quests</h2><p class="sub" id="questSubtitle">New challenges every day.</p></div>
+        <div class="section-actions"><button class="btn secondary" id="refreshProgressBtn" type="button">Refresh</button></div>
+      </div>
+      <div id="dailyQuests" class="quest-list"><div class="empty">Sign in to see today's quests.</div></div>
+      <div id="questNotice" class="notice" role="status" aria-live="polite"></div>
+      <p class="note">Quest progress counts verified recycling records by material type, not individual items. Daily quests rotate at midnight Singapore time. Quest points are shown as rewards, but your current Firestore rules must explicitly allow secure quest claims before they can be added to your balance.</p>
+    </section>
+  </section>
+
+  <section class="page" id="page-achievements">
+    <section class="panel">
+      <div class="panel-head"><div><h2>Lifetime achievements</h2><p class="sub">Milestones stay with your account.</p></div></div>
+      <div id="achievements" class="achievement-grid"><div class="empty">Sign in to view achievements.</div></div>
+      <p class="note">Rank achievements unlock when your current leaderboard rank reaches the milestone and are remembered in this browser.</p>
+    </section>
   </section>
 
   <section class="page" id="page-rewards">
@@ -593,6 +633,8 @@ function setTab(name){
  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===`page-${name}`));
  const titles={
  dashboard:["A little less waste.<br>A better tomorrow.","Recycle, collect points, and make a difference."],
+ quests:["Your daily quests.","Complete recycling challenges and track your daily progress."],
+ achievements:["Every milestone matters.","Celebrate the progress you've made with WasteLess."],
  rewards:["Good choices. Great rewards.","Use your verified points to redeem useful items."],
  leaderboard:["Progress, together.","See how the WasteLess community is doing."],
  account:["Your WasteLess account.","Manage your profile and track your contributions."]
@@ -604,7 +646,7 @@ function setTab(name){
  window.scrollTo({top:0,behavior:"smooth"});
 }
 document.querySelectorAll(".tab").forEach(b=>{
- const labels={dashboard:["dashboard","Home"],rewards:["rewards","Rewards"],leaderboard:["leaderboard","Leaderboard"],account:["account","Account"]};
+ const labels={dashboard:["dashboard","Home"],quests:["quests","Quests"],achievements:["achievements","Achievements"],rewards:["rewards","Rewards"],leaderboard:["leaderboard","Leaderboard"],account:["account","Account"]};
  const [ico,label]=labels[b.dataset.tab];
  b.innerHTML=svg(ico)+`<span>${label}</span>`;
  b.addEventListener("click",()=>setTab(b.dataset.tab));
